@@ -6,9 +6,24 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "prettier": "prettier --write \"src/**/*.{ts,tsx,js,json,graphql}\"",
+    "cleanup": "npm run prettier && npm run lint:fix",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate-dev": "dotenv -e .env.local prisma migrate dev",
+    "prisma:migrate-prod": "dotenv -e .env.local prisma migrate deploy",
+    "prisma:push": "dotenv -e .env.local prisma db push",
+    "prisma:migrate-empty-dev": "dotenv -e .env.local prisma migrate dev --create-only",
+    "prisma:version": "prisma -v",
+    "prisma:seed-testing": "dotenv -e .env.local node prisma/seed/testing.js",
+    "prisma:seed": "dotenv -e .env.local node prisma/seed/seeder.js"
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
+    "@heroicons/react": "^2.0.17",
+    "@next-auth/prisma-adapter": "^1.0.6",
+    "@prisma/client": "^4.13.0",
     "@types/node": "20.1.0",
     "@types/react": "18.2.5",
     "@types/react-dom": "18.2.4",
@@ -16,10 +31,17 @@
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
     "next": "13.4.1",
+    "next-auth": "^4.22.1",
     "postcss": "8.4.23",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "sass": "^1.62.1",
     "tailwindcss": "3.3.2",
     "typescript": "5.0.4"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.2.1",
+    "prettier": "^2.8.8",
+    "prisma": "^4.13.0"
   }
 }
