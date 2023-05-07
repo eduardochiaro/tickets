@@ -3,8 +3,8 @@
 @tailwind utilities;
 
 body {
-  @apply bg-gray-100 dark:bg-gray-950 text-gray-900 dark:text-gray-200;
+  @apply bg-gray-200 dark:bg-gray-950 text-gray-900 dark:text-gray-200;
 }
 .checkbox:checked + .check-icon {
-  display: flex;
+  @apply flex;
 }

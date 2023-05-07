@@ -10,14 +10,52 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//site schemas
+
 model Project {
   id            Int      @id @default(autoincrement())
   slug          String   @unique @db.VarChar(255)
   title         String   @db.VarChar(255)
-  createdAt     DateTime @default(now()) @db.Timestamp(6)
   description   String?
   published     Boolean  @default(false)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  issues        Issue[]
 }
+
+model Issue {
+  id            Int      @id @default(autoincrement())
+  token         String   @unique @db.VarChar(255)
+  title         String   @db.VarChar(255)
+  description   String?
+  closed        Boolean  @default(false)
+  project       Project  @relation(fields: [projectId], references: [id])
+  projectId     Int
+  status        Status   @relation(fields: [statusId], references: [id])
+  statusId      Int
+  owner         User    @relation(fields: [ownerId], references: [id])
+  ownerId       Int
+  type          Type     @relation(fields: [typeId], references: [id])
+  typeId        Int
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  deletedAt     DateTime? @db.Timestamp(6)
+  closedAt      DateTime? @db.Timestamp(6)
+}
+
+model Status {
+  id            Int      @id @default(autoincrement())
+  title         String   @db.VarChar(255)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  issues        Issue[]
+}
+
+model Type {
+  id            Int      @id @default(autoincrement())
+  title         String   @db.VarChar(255)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  issues        Issue[]
+}
+
+//account auth schemas
 
 model Account {
   id                 Int      @id @default(autoincrement())
@@ -62,4 +100,5 @@ model User {
   image           String?
   accounts        Account[]
   sessions        Session[]
+  issues          Issue[]
 }

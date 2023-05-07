@@ -1,16 +1,12 @@
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
-import Head from 'next/head';
 
 export default async function Project({ params, children }: { params: { slug: string }; children: React.ReactNode }) {
   const data = await getData(params.slug);
   return (
     <main className="flex flex-col min-h-screen">
-      <Head>
-        <title>{data.title} | Tickets</title>
-      </Head>
       <Navbar name={data.title} />
-      <section className="mx-auto max-w-7xl">{children}</section>
+      <section className="mx-auto container px-2 sm:px-6 lg:px-8">{children}</section>
     </main>
   );
 }
