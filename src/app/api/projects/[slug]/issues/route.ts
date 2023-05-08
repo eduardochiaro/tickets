@@ -18,8 +18,21 @@ export async function GET(
       }
     },
     include: {
-      status: true,
-      type: true,
+      status: {
+        select: {
+          title: true,
+        }
+      },
+      type: {
+        select: {
+          title: true,
+        }
+      },
+      assignee: {
+        select: {
+          user: true,
+        }
+      },
     }
   });
 

@@ -2,6 +2,7 @@
 
 import { ChatBubbleLeftRightIcon, EllipsisHorizontalIcon, ListBulletIcon } from "@heroicons/react/24/outline";
 import moment from 'moment';
+import Image from "next/image";
 import React, { useState, useEffect } from 'react';
 
 export default function Table({ data } : { data: any }) {
@@ -60,6 +61,7 @@ export default function Table({ data } : { data: any }) {
               <tr className="h-12 w-full text-sm leading-none text-gray-800">
                 <th className="font-semibold text-left p-2"></th>
                 <th className="font-semibold text-left p-2">Issue</th>
+                <th className="font-semibold text-left p-2">Assigned to</th>
                 <th className="font-semibold text-left p-2">Type</th>
                 <th className="font-semibold text-left p-2">Created</th>
                 <th className="font-semibold text-left p-2">Chat</th>
@@ -86,6 +88,24 @@ export default function Table({ data } : { data: any }) {
                   <div className="flex items-center gap-2">
                     <p className="text-base font-medium leading-none text-gray-700">{issue.title}</p>
                   </div>
+                </td>
+                <td className="whitespace-nowrap p-2">
+                {issue.assignee && (
+                <div className="flex -space-x-2 overflow-hidden">
+                  {issue.assignee.map((assignee: any) => (
+                  <div key={assignee.user.id} className="inline-block relative">
+                    <Image
+                      className="h-8 w-8 rounded-full ring-2 ring-white"
+                      src={assignee.user.image}
+                      alt={assignee.user.name}
+                      title={assignee.user.name}
+                      width={100}
+                      height={100}
+                    />
+                  </div>
+                  ))}
+                </div>
+                )}
                 </td>
                 <td className="whitespace-nowrap p-2">
                   <div className="flex items-center gap-2">

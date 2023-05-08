@@ -39,6 +39,17 @@ model Issue {
   createdAt     DateTime @default(now()) @db.Timestamp(6)
   deletedAt     DateTime? @db.Timestamp(6)
   closedAt      DateTime? @db.Timestamp(6)
+  assignee      UsersOnIssues[]
+}
+
+model UsersOnIssues {
+  issue       Issue     @relation(fields: [issueId], references: [id])
+  issueId     Int // relation scalar field (used in the `@relation` attribute above)
+  user        User @relation(fields: [userId], references: [id])
+  userId      Int // relation scalar field (used in the `@relation` attribute above)
+  assignedAt  DateTime @default(now())
+
+  @@id([issueId, userId])
 }
 
 model Status {
@@ -100,5 +111,6 @@ model User {
   image           String?
   accounts        Account[]
   sessions        Session[]
-  issues          Issue[]
+  IssueOwned      Issue[]
+  issuesAssigned  UsersOnIssues[]
 }
