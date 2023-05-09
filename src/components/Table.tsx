@@ -1,11 +1,15 @@
 'use client';
 
-import { ChatBubbleLeftRightIcon, EllipsisHorizontalIcon, ListBulletIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleLeftRightIcon, ListBulletIcon } from "@heroicons/react/24/outline";
 import moment from 'moment';
 import Image from "next/image";
+import useSWR from 'swr';
 import React, { useState, useEffect } from 'react';
 
-export default function Table({ data } : { data: any }) {
+const fetcher = (url: URL) => fetch(url).then((res) => res.json());
+
+export default function Table({ slug } : { slug: string }) {
+	const { data, error, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher)
   const [dataset, setDataset] = useState<any>(null);
 
   useEffect(() => {
@@ -44,13 +48,13 @@ export default function Table({ data } : { data: any }) {
       <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10 rounded-lg">
         <div className="sm:flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-8 text-sm">
-            <button type="button" onClick={() => onClickAll()} className="py-1 px-6 bg-indigo-200 text-indigo-700 rounded-lg">
+            <button type="button" onClick={() => onClickAll()} className="group font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 bg-blue-500 text-white border-blue-500">
               All
             </button>
-            <button type="button" onClick={() => onClickDone()} className="py-1 px-6 text-gray-600 hover:text-indigo-700 hover:bg-indigo-200 rounded-lg">
+            <button type="button" onClick={() => onClickDone()} className="group font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-blue-300">
               Done
             </button>
-            <button type="button" onClick={() => onClickPending()} className="py-1 px-6 text-gray-600 hover:text-indigo-700 hover:bg-indigo-200 rounded-lg">
+            <button type="button" onClick={() => onClickPending()} className="group font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-blue-300">
               Pending
             </button>
           </div>
@@ -72,7 +76,7 @@ export default function Table({ data } : { data: any }) {
             <tbody className="divide-y divide-gray-300 bg-gray-50">
               {!dataset || dataset.length <= 0 && (
               <tr className="h-16">
-                <td colSpan={7} className="p-2 text-center ">
+                <td colSpan={8} className="p-2 text-center ">
                   No issues found.
                 </td>
               </tr>

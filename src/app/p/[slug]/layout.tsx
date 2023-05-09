@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
+import prisma from '@/utils/prisma';
 
 export default async function Project({ params, children }: { params: { slug: string }; children: React.ReactNode }) {
   const data = await getData(params.slug);
@@ -12,7 +13,11 @@ export default async function Project({ params, children }: { params: { slug: st
 }
 
 async function getData(slug: string) {
-  const project = await fetch(`${process.env.NEXTAUTH_URL}/api/projects/${slug}`).then((res) => res.json());
+  const project = await prisma.project.findFirst({
+    where: {
+      slug,
+    },
+  });
   if (!project) {
     throw new Error('Failed to fetch data');
   }

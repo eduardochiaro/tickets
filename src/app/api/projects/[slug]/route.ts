@@ -20,4 +20,7 @@ export async function GET(
   if (project) {
     return NextResponse.json(project);
   }
+	return new Response(null, {
+    status: 400,
+  });
 }
