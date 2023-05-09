@@ -1,12 +1,33 @@
 'use client';
 
-import { ChatBubbleLeftRightIcon, ListBulletIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, ChatBubbleLeftRightIcon, ListBulletIcon } from "@heroicons/react/24/outline";
 import moment from 'moment';
 import Image from "next/image";
 import useSWR from 'swr';
 import React, { useState, useEffect } from 'react';
+import SpinnerIcon from "@/icons/Spinner";
 
 const fetcher = (url: URL) => fetch(url).then((res) => res.json());
+
+function compare(key: any, order = 'asc') {
+  return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
+    if (!a.hasOwnProperty(key) || !b.hasOwnProperty(key)) {
+      // property doesn't exist on either object
+      return 0;
+    }
+
+    const varA = typeof a[key] === 'string' ? a[key].toUpperCase() : a[key];
+    const varB = typeof b[key] === 'string' ? b[key].toUpperCase() : b[key];
+
+    let comparison = 0;
+    if (varA > varB) {
+      comparison = 1;
+    } else if (varA < varB) {
+      comparison = -1;
+    }
+    return order === 'desc' ? comparison * -1 : comparison;
+  };
+}
 
 export default function Table({ slug } : { slug: string }) {
 	const { data, error, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher)
@@ -31,6 +52,18 @@ export default function Table({ slug } : { slug: string }) {
     const done = data.filter((issue: any) => issue.closed === true);
     setDataset(done);
   };
+
+  const sortByDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const order = event.target.value;
+    if (order === 'latest') {
+      const sorted = data.sort(compare('createdAt', 'desc'));
+      setDataset(sorted);
+    } else {
+      const sorted = data.sort(compare('createdAt', 'asc'));
+      setDataset(sorted);
+    }
+  }
+
   return (
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
@@ -38,9 +71,9 @@ export default function Table({ slug } : { slug: string }) {
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">Issues</p>
           <div className="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
             <p>Sort By:</p>
-            <select className="focus:outline-none bg-transparent ml-1">
-              <option className="text-sm text-indigo-800">Latest</option>
-              <option className="text-sm text-indigo-800">Oldest</option>
+            <select className="focus:outline-none bg-transparent ml-1" onChange={(e) => sortByDate(e)}>
+              <option className="text-sm text-indigo-800" value={`latest`}>Latest</option>
+              <option className="text-sm text-indigo-800" value={`oldest`}>Oldest</option>
             </select>
           </div>
         </div>
@@ -74,6 +107,16 @@ export default function Table({ slug } : { slug: string }) {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300 bg-gray-50">
+              {isLoading && (
+              <tr className="h-16">
+                <td colSpan={8} className="p-2 text-center">
+                  <div className="flex items-center justify-center gap-2">
+                    <SpinnerIcon className="animate-spin h-5 w-5" />
+                    Loading
+                  </div>
+                </td>
+              </tr> 
+              )}
               {!dataset || dataset.length <= 0 && (
               <tr className="h-16">
                 <td colSpan={8} className="p-2 text-center ">
