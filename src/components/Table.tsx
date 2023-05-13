@@ -30,22 +30,22 @@ function compare(key: any, order = 'asc') {
 }
 
 export default function Table({ slug } : { slug: string }) {
-	const { data, error, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher)
+	const { data, mutate, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher)
   const [dataset, setDataset] = useState<any>(null);
 
   useEffect(() => {
     if (data) {
-      setDataset(data);
+      setDataset([...data]);
     }
   }, [data]);
 
   const onClickPending = () => {
     const pending = data.filter((issue: any) => issue.statusId === 2);
-    setDataset(pending);
+    setDataset([...pending]);
   };
 
   const onClickAll = () => {
-    setDataset(data);
+    setDataset([...data]);
   };
 
   const onClickDone = () => {
@@ -57,10 +57,10 @@ export default function Table({ slug } : { slug: string }) {
     const order = event.target.value;
     if (order === 'latest') {
       const sorted = data.sort(compare('createdAt', 'desc'));
-      setDataset(sorted);
+      setDataset([...sorted]);
     } else {
       const sorted = data.sort(compare('createdAt', 'asc'));
-      setDataset(sorted);
+      setDataset([...sorted]);
     }
   }
 
@@ -116,6 +116,13 @@ export default function Table({ slug } : { slug: string }) {
                   </div>
                 </td>
               </tr> 
+              )}
+              {!dataset || dataset.length <= 0 && (
+              <tr className="h-16">
+                <td colSpan={8} className="p-2 text-center ">
+                  No issues found.
+                </td>
+              </tr>
               )}
               {!dataset || dataset.length <= 0 && (
               <tr className="h-16">
