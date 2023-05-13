@@ -17,6 +17,9 @@ export async function GET(
         slug
       }
     },
+		orderBy: {
+			createdAt: 'desc'
+		},
     include: {
       status: {
         select: {
