@@ -14,29 +14,35 @@ export async function GET(
   const issues = await prisma.issue.findMany({
     where: {
       project: {
-        slug
-      }
+        slug,
+      },
     },
-		orderBy: {
-			createdAt: 'desc'
-		},
+    orderBy: {
+      createdAt: 'desc',
+    },
     include: {
       status: {
         select: {
           title: true,
-        }
+        },
       },
       type: {
         select: {
           title: true,
-        }
+        },
       },
       assignee: {
         select: {
-          user: true,
-        }
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
       },
-    }
+    },
   });
 
   if (issues) {

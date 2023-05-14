@@ -2,7 +2,7 @@ import NextAuth from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/utils/prisma';
-import { User as NextAuthUser } from "next-auth";
+import { User as NextAuthUser } from 'next-auth';
 
 interface ExtendedUser extends NextAuthUser {
   id: string;
@@ -45,7 +45,7 @@ const handler = NextAuth({
         ...session,
       };
     },
-  }
+  },
 });
 
 export { handler as GET, handler as POST };

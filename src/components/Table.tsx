@@ -1,11 +1,13 @@
 'use client';
 
-import { ArrowPathIcon, ChatBubbleLeftRightIcon, ListBulletIcon } from "@heroicons/react/24/outline";
+import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import moment from 'moment';
-import Image from "next/image";
+import Image from 'next/image';
 import useSWR from 'swr';
 import React, { useState, useEffect } from 'react';
-import SpinnerIcon from "@/icons/Spinner";
+import SpinnerIcon from '@/icons/Spinner';
+import IssueModal from './IssueModal';
+import useStaleSWR from '@/utils/staleSWR';
 
 const fetcher = (url: URL) => fetch(url).then((res) => res.json());
 
@@ -29,40 +31,46 @@ function compare(key: any, order = 'asc') {
   };
 }
 
-export default function Table({ slug } : { slug: string }) {
-	const { data, mutate, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher)
-  const [dataset, setDataset] = useState<any>(null);
+export default function Table({ slug }: { slug: string }) {
+  const { data: issues, mutate, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher);
+  const [issuesset, setDataset] = useState<any>(null);
+  const [activeButton, setActiveButton] = useState<string>('all');
+  const [currentIssue, setCurrentIssue] = useState<any>(null);
 
   useEffect(() => {
-    if (data) {
-      setDataset([...data]);
+    if (issues) {
+      setDataset([...issues]);
     }
-  }, [data]);
+  }, [issues]);
 
   const onClickPending = () => {
-    const pending = data.filter((issue: any) => issue.statusId === 2);
+    const pending = issues.filter((issue: any) => issue.statusId === 2);
     setDataset([...pending]);
+    setActiveButton('pending');
   };
 
   const onClickAll = () => {
-    setDataset([...data]);
+    setDataset([...issues]);
+    setActiveButton('all');
   };
 
   const onClickDone = () => {
-    const done = data.filter((issue: any) => issue.closed === true);
+    const done = issues.filter((issue: any) => issue.closed === true);
     setDataset(done);
+    setActiveButton('done');
   };
 
   const sortByDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const order = event.target.value;
+    const filted = activeButton === 'all' ? issues : issuesset;
     if (order === 'latest') {
-      const sorted = data.sort(compare('createdAt', 'desc'));
+      const sorted = filted.sort(compare('createdAt', 'desc'));
       setDataset([...sorted]);
     } else {
-      const sorted = data.sort(compare('createdAt', 'asc'));
+      const sorted = filted.sort(compare('createdAt', 'asc'));
       setDataset([...sorted]);
     }
-  }
+  };
 
   return (
     <>
@@ -72,8 +80,12 @@ export default function Table({ slug } : { slug: string }) {
           <div className="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
             <p>Sort By:</p>
             <select className="focus:outline-none bg-transparent ml-1" onChange={(e) => sortByDate(e)}>
-              <option className="text-sm text-indigo-800" value={`latest`}>Latest</option>
-              <option className="text-sm text-indigo-800" value={`oldest`}>Oldest</option>
+              <option className="text-sm text-indigo-800" value={`latest`}>
+                Latest
+              </option>
+              <option className="text-sm text-indigo-800" value={`oldest`}>
+                Oldest
+              </option>
             </select>
           </div>
         </div>
@@ -81,13 +93,13 @@ export default function Table({ slug } : { slug: string }) {
       <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10 rounded-lg">
         <div className="sm:flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-8 text-sm">
-            <button type="button" onClick={() => onClickAll()} className="group font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 bg-blue-500 text-white border-blue-500">
+            <button type="button" onClick={() => onClickAll()} className={`${activeButton === 'all' && 'active'} btn`}>
               All
             </button>
-            <button type="button" onClick={() => onClickDone()} className="group font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-blue-300">
+            <button type="button" onClick={() => onClickDone()} className={`${activeButton === 'done' && 'active'} btn`}>
               Done
             </button>
-            <button type="button" onClick={() => onClickPending()} className="group font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-blue-300">
+            <button type="button" onClick={() => onClickPending()} className={`${activeButton === 'pending' && 'active'} btn`}>
               Pending
             </button>
           </div>
@@ -108,92 +120,95 @@ export default function Table({ slug } : { slug: string }) {
             </thead>
             <tbody className="divide-y divide-gray-300 bg-gray-50">
               {isLoading && (
-              <tr className="h-16">
-                <td colSpan={8} className="p-2 text-center">
-                  <div className="flex items-center justify-center gap-2">
-                    <SpinnerIcon className="animate-spin h-5 w-5" />
-                    Loading
-                  </div>
-                </td>
-              </tr> 
+                <tr className="h-16">
+                  <td colSpan={8} className="p-2 text-center">
+                    <div className="flex items-center justify-center gap-2">
+                      <SpinnerIcon className="animate-spin h-5 w-5" />
+                      Loading
+                    </div>
+                  </td>
+                </tr>
               )}
-              {!dataset || dataset.length <= 0 && (
-              <tr className="h-16">
-                <td colSpan={8} className="p-2 text-center ">
-                  No issues found.
-                </td>
-              </tr>
-              )}
-              {!dataset || dataset.length <= 0 && (
-              <tr className="h-16">
-                <td colSpan={8} className="p-2 text-center ">
-                  No issues found.
-                </td>
-              </tr>
-              )}
-              {dataset && dataset.map((issue: any) => (
-              <tr className="h-16" key={issue.id}>
-                <td className="grow">
-                  <div className="ml-5">
-
-                  </div>
-                </td>
-                <td className="w-1/2 p-2">
-                  <div className="flex items-center gap-2">
-                    <p className="text-base font-medium leading-none text-gray-700">{issue.title}</p>
-                  </div>
-                </td>
-                <td className="whitespace-nowrap p-2">
-                {issue.assignee && (
-                <div className="flex -space-x-2 overflow-hidden">
-                  {issue.assignee.map((assignee: any) => (
-                  <div key={assignee.user.id} className="inline-block relative">
-                    <Image
-                      className="h-8 w-8 rounded-full ring-2 ring-white"
-                      src={assignee.user.image}
-                      alt={assignee.user.name}
-                      title={assignee.user.name}
-                      width={100}
-                      height={100}
-                    />
-                  </div>
-                  ))}
-                </div>
-                )}
-                </td>
-                <td className="whitespace-nowrap p-2">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm leading-none text-gray-600">{issue.type.title}</p>
-                  </div>
-                </td>
-                <td className="whitespace-nowrap p-2">
-                  <div className="flex items-center gap-2">
-                    <ListBulletIcon className="w-5 h-5 text-gray-600" />
-                    <p className="text-sm leading-none text-gray-600">{moment(issue.createdAt).format("MM/DD/YY") }</p>
-                  </div>
-                  <p className="text-xs">{moment(issue.createdAt).fromNow()}</p>
-                </td>
-                <td className="whitespace-nowrap p-2">
-                  <div className="flex items-center gap-2">
-                    <ChatBubbleLeftRightIcon className="w-5 h-5 text-gray-600" />
-                    <p className="text-sm leading-none text-gray-600">23</p>
-                  </div>
-                </td>
-                <td className="whitespace-nowrap p-2">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm leading-none text-gray-600">{issue.status.title}</p>
-                  </div>
-                </td>
-                <td className="whitespace-nowrap p-2 text-right pr-5">
-                  <button className="text-sm leading-none text-gray-600 py-3 px-5 bg-gray-200 rounded hover:bg-gray-300 focus:outline-none">View</button>
-                </td>
-              </tr>
-              ))}
-              
+              {!issuesset ||
+                (issuesset.length <= 0 && (
+                  <tr className="h-16">
+                    <td colSpan={8} className="p-2 text-center ">
+                      No issues found.
+                    </td>
+                  </tr>
+                ))}
+              {issuesset &&
+                issuesset.map((issue: any) => (
+                  <tr className="h-16" key={issue.id}>
+                    <td className="grow">
+                      <div className="ml-5"></div>
+                    </td>
+                    <td className="w-1/2 p-2">
+                      <div className="flex items-center gap-2">
+                        <p className="text-base font-medium leading-none text-gray-700">{issue.title}</p>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap p-2">
+                      {issue.assignee && (
+                        <div className="flex -space-x-2">
+                          {issue.assignee.slice(0, 3).map((assignee: any) => (
+                            <div key={assignee.user.id} className="inline-block relative z-10 hover:z-30">
+                              <Image
+                                className="h-8 w-8 rounded-full ring-2 ring-white hover:ring-sky-400"
+                                src={assignee.user.image}
+                                alt={assignee.user.name}
+                                title={assignee.user.name}
+                                width={100}
+                                height={100}
+                              />
+                            </div>
+                          ))}
+                          {issue.assignee.length > 3 && (
+                            <div className="inline-block relative w-8 z-10 hover:z-30">
+                              <p title={`${issue.assignee.length - 3} more assignee`} className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white">+{issue.assignee.length - 3}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                    <td className="whitespace-nowrap p-2">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm leading-none text-gray-600">{issue.type.title}</p>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap p-2">
+                      <div className="flex items-center gap-2">
+                        <ListBulletIcon className="w-5 h-5 text-gray-600" />
+                        <p className="text-sm leading-none text-gray-600">{moment(issue.createdAt).format('MM/DD/YY')}</p>
+                      </div>
+                      <p className="text-xs">{moment(issue.createdAt).fromNow()}</p>
+                    </td>
+                    <td className="whitespace-nowrap p-2">
+                      <div className="flex items-center gap-2">
+                        <ChatBubbleLeftRightIcon className="w-5 h-5 text-gray-600" />
+                        <p className="text-sm leading-none text-gray-600">23</p>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap p-2">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm leading-none text-gray-600">{issue.status.title}</p>
+                      </div>
+                    </td>
+                    <td className="whitespace-nowrap p-2 text-right pr-5">
+                      <button
+                        onClick={() => setCurrentIssue({ ...issue })}
+                        className="btn btn-gray"
+                      >
+                        View
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
       </div>
+      <IssueModal issue={currentIssue} onClose={() => null} />
     </>
   );
 }
