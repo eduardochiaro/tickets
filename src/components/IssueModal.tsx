@@ -1,10 +1,12 @@
-import { Issue, Status, Type } from '@prisma/client';
+import { Issue, Status, Type, User } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import useStaleSWR from '../utils/staleSWR';
 
 type IssueModalProps = {
-  issue: Issue | null;
+  issue: Issue & {
+    assignees: User[];
+  } | null;
   onClose: () => void;
 };
 
@@ -63,6 +65,18 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
                     </option>
                   ))}
                 </select>
+              </div>
+              <div className="flex flex-col col-span-2">
+                <label htmlFor="assignees" className="text-sm font-semibold">
+                  Assignees
+                </label>
+                <div className="flex items-center gap-2 border border-gray-300 rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                  {issue?.assignees?.map((a: any) => (
+                    <div key={a.user.id} className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-pink-600 bg-pink-200">
+                      {a.user.name}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </Dialog.Description>

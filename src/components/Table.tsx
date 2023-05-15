@@ -7,7 +7,6 @@ import useSWR from 'swr';
 import React, { useState, useEffect } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
-import useStaleSWR from '@/utils/staleSWR';
 
 const fetcher = (url: URL) => fetch(url).then((res) => res.json());
 
@@ -149,9 +148,9 @@ export default function Table({ slug }: { slug: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2">
-                      {issue.assignee && (
+                      {issue.assignees && (
                         <div className="flex -space-x-2">
-                          {issue.assignee.slice(0, 3).map((assignee: any) => (
+                          {issue.assignees.slice(0, 3).map((assignee: any) => (
                             <div key={assignee.user.id} className="inline-block relative z-10 hover:z-30">
                               <Image
                                 className="h-8 w-8 rounded-full ring-2 ring-white hover:ring-sky-400"
@@ -163,9 +162,9 @@ export default function Table({ slug }: { slug: string }) {
                               />
                             </div>
                           ))}
-                          {issue.assignee.length > 3 && (
+                          {issue.assignees.length > 3 && (
                             <div className="inline-block relative w-8 z-10 hover:z-30">
-                              <p title={`${issue.assignee.length - 3} more assignee`} className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white">+{issue.assignee.length - 3}</p>
+                              <p title={`${issue.assignees.length - 3} more assignee(s)`} className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white">+{issue.assignees.length - 3}</p>
                             </div>
                           )}
                         </div>
@@ -196,7 +195,7 @@ export default function Table({ slug }: { slug: string }) {
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
                       <button
-                        onClick={() => setCurrentIssue({ ...issue })}
+                        onClick={() => setCurrentIssue(issue)}
                         className="btn btn-gray"
                       >
                         View

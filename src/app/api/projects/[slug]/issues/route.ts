@@ -31,7 +31,7 @@ export async function GET(
           title: true,
         },
       },
-      assignee: {
+      assignees: {
         select: {
           user: {
             select: {
