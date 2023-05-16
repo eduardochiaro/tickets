@@ -31,6 +31,12 @@ export async function GET(
           title: true,
         },
       },
+			owner: {
+        select: {
+					name: true,
+					image: true,
+				}
+			},
       assignees: {
         select: {
           user: {

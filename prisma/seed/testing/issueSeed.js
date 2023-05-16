@@ -10,7 +10,8 @@ const data = [
     projectId: 1,
     typeId: 2,
     statusId: 1,
-    ownerId: 1,
+    ownerId: 2,
+		assignees: { create: [{ userId: 1 }, { userId: 2 }] }
   },
   {
     token: uuidv4(),
@@ -19,7 +20,8 @@ const data = [
     projectId: 1,
     typeId: 1,
     statusId: 1,
-    ownerId: 1,
+    ownerId: 3,
+		assignees: { create: [{ userId: 1 }, { userId: 4 }, { userId: 5 }, { userId:8 }, { userId: 6 }] }
   },
   {
     token: uuidv4(),
@@ -28,14 +30,16 @@ const data = [
     projectId: 1,
     typeId: 3,
     statusId: 2,
-    ownerId: 1,
+    ownerId: 9,
   }
 ];
 
 const seed = async () => {
-  await prisma.issue.createMany({
-    data,
-  });
+  await data.map(async (single) => {
+		await prisma.issue.create({
+			data: single,
+		});
+	});
   console.log('Added issues data');
 }
 

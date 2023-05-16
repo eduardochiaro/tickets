@@ -164,7 +164,12 @@ export default function Table({ slug }: { slug: string }) {
                           ))}
                           {issue.assignees.length > 3 && (
                             <div className="inline-block relative w-8 z-10 hover:z-30">
-                              <p title={`${issue.assignees.length - 3} more assignee(s)`} className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white">+{issue.assignees.length - 3}</p>
+                              <p
+                                title={`${issue.assignees.length - 3} more assignee(s)`}
+                                className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white"
+                              >
+                                +{issue.assignees.length - 3}
+                              </p>
                             </div>
                           )}
                         </div>
@@ -194,10 +199,7 @@ export default function Table({ slug }: { slug: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
-                      <button
-                        onClick={() => setCurrentIssue(issue)}
-                        className="btn btn-gray"
-                      >
+                      <button onClick={() => setCurrentIssue(issue)} className="btn btn-gray">
                         View
                       </button>
                     </td>
