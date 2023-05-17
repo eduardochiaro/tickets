@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { AuthOptions as NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import prisma from '@/utils/prisma';
@@ -11,7 +11,7 @@ interface ExtendedUser extends NextAuthUser {
 
 const { GITHUB_ID = '', GITHUB_SECRET = '', GOOGLE_CLIENT_ID = '', GOOGLE_CLIENT_SECRET = '', NEXTAUTH_SECRET = '' } = process.env;
 
-const handler = NextAuth({
+const authOptions: NextAuthOptions = {
   secret: NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -46,6 +46,8 @@ const handler = NextAuth({
       };
     },
   },
-});
+};
 
-export { handler as GET, handler as POST };
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST, authOptions };

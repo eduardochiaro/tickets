@@ -31,12 +31,12 @@ export async function GET(
           title: true,
         },
       },
-			owner: {
+      owner: {
         select: {
-					name: true,
-					image: true,
-				}
-			},
+          name: true,
+          image: true,
+        },
+      },
       assignees: {
         select: {
           user: {
