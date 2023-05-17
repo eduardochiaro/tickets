@@ -152,16 +152,16 @@ export default function Table({ slug }: { slug: string }) {
                     <td className="p-2">
                       <div className="ml-5 opacity-60 group-hover:opacity-100 font-mono text-sm">{issue.shortToken}</div>
                     </td>
-                    <td className="grow w-1/4 p-2">
+                    <td className="w-full p-2">
                       <div className="flex items-center gap-2">
                         <p className="text-base font-medium leading-none text-gray-700">{issue.title}</p>
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2">
                       {issue.assignees && (
-                        <div className="flex -space-x-2">
+                        <div className="flex -space-x-3">
                           {issue.assignees.slice(0, 3).map((assignee: any) => (
-                            <div key={assignee.user.id} className="inline-block relative z-10 hover:z-30">
+                            <div key={assignee.user.id} className="inline-block relative z-10 hover:z-30 whitespace-nowrap w-8">
                               <Image
                                 className="h-8 w-8 rounded-full ring-2 ring-gray-200 hover:ring-sky-400"
                                 src={assignee.user.image}

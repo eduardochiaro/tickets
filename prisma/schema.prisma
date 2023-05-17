@@ -42,10 +42,10 @@ model Issue {
   deletedAt     DateTime? @db.Timestamp(6)
   closedAt      DateTime? @db.Timestamp(6)
   assignees     UsersOnIssues[]
-  history       History[]
+  history       IssueHistory[]
 }
 
-model History {
+model IssueHistory {
   id            Int      @id @default(autoincrement())
   issue         Issue    @relation(fields: [issueId], references: [id])
   issueId       Int
@@ -53,6 +53,7 @@ model History {
   userId        Int
   status        String   @db.VarChar(255)
   type          String   @db.VarChar(255)
+	message				String   @db.VarChar(255)
   createdAt     DateTime @default(now()) @db.Timestamp(6)
 }
 
@@ -127,5 +128,5 @@ model User {
   sessions        Session[]
   IssueOwned      Issue[]
   issuesAssigned  UsersOnIssues[]
-  history         History[]
+  history         IssueHistory[]
 }

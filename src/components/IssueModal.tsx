@@ -1,10 +1,11 @@
-import { Issue, Status, Type, User } from '@prisma/client';
+import { Issue, Status, Type, User, IssueHistory } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import useStaleSWR from '../utils/staleSWR';
 import Image from 'next/image';
 import moment from 'moment';
 import { XCircleIcon } from '@heroicons/react/24/solid';
+import { HashtagIcon } from '@heroicons/react/24/outline';
 
 type IssueModalProps = {
   issue:
@@ -18,9 +19,10 @@ type IssueModalProps = {
 };
 
 export default function IssueModal({ issue, onClose }: IssueModalProps) {
-  let [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { data: types } = useStaleSWR(`/api/types`);
   const { data: status } = useStaleSWR(`/api/status`);
+	const { data: history } = useStaleSWR( issue ? `/api/issues/${issue.id}/history` : null);
 
   useEffect(() => {
     if (issue) {
@@ -34,16 +36,45 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
         <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white p-8">
           <p>Issue</p>
           <Dialog.Title className="text-3xl border-b pb-4 group flex items-end gap-2">{issue?.title} 
-					<span className="group-hover:hidden opacity-60 text-xl">#{issue?.shortToken}</span>
-					<span className="hidden group-hover:inline opacity-60 text-xl">#{issue?.token}</span>
+					<span className="opacity-60 text-xl flex items-center">
+						<HashtagIcon className="h-4"/>
+						<span className="group-hover:hidden">{issue?.shortToken}</span>
+						<span className="hidden group-hover:inline">{issue?.token}</span>
+					</span>
 					</Dialog.Title>
-          <Dialog.Description className="pb-5 grid grid-cols-3 gap-4" as="div">
-            <div className="grid grid-cols-2 gap-4 col-span-2 pt-4 pr-4 border-r">
+          <Dialog.Description className="pb-5 grid grid-cols-2 gap-4" as="div">
+            <div className="pt-4 pr-4 border-r">
               <div className="col-span-2 p-4 bg-gray-200 text-sm">
                 <h4 className="text-base font-semibold pb-2">Description</h4>
                 {issue?.description}
               </div>
-              <div className="flex flex-col">
+								<div className="col-span-2">
+								<h3 className="text-xl font-semibold mt-4 mb-2">History</h3>
+								<ul className="px-2">
+									{history?.map((row: IssueHistory) => (
+									<li className="text-xs">[{moment(row.createdAt).format('MM/DD/YY h:mm a')}] {row.message}</li>
+									))}
+								</ul>
+							</div>
+            </div>
+            <div className="pt-4 space-y-3">
+							<div>
+              <h3 className="text-xl font-semibold mb-2">Owner</h3>
+              <div className="flex items-center gap-2 group">
+                <Image
+                  className="h-6 w-6 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
+                  src={issue?.owner?.image || ''}
+                  alt={issue?.owner?.name || ''}
+                  title={issue?.owner?.name || ''}
+                  width={100}
+                  height={100}
+                />
+                {issue?.owner?.name}
+              </div>
+              <p className="mt-2 text-sm">created: {moment(issue?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
+              <p className="text-xs">({moment(issue?.createdAt).fromNow()})</p>
+							</div>
+							<div className="flex flex-col">
                 <label htmlFor="status" className="text-sm font-semibold">
                   Status
                 </label>
@@ -101,22 +132,7 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
                 </div>
               </div>
             </div>
-            <div className="pt-4">
-              <h3 className="text-xl font-semibold mb-2">Owner</h3>
-              <div className="flex items-center gap-2 group">
-                <Image
-                  className="h-6 w-6 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
-                  src={issue?.owner?.image || ''}
-                  alt={issue?.owner?.name || ''}
-                  title={issue?.owner?.name || ''}
-                  width={100}
-                  height={100}
-                />
-                {issue?.owner?.name}
-              </div>
-              <p className="mt-2 text-sm">created: {moment(issue?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
-              <p className="text-xs">({moment(issue?.createdAt).fromNow()})</p>
-            </div>
+
           </Dialog.Description>
 
           <button onClick={() => setIsOpen(false)} className="btn">
