@@ -3,12 +3,10 @@
 import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import moment from 'moment';
 import Image from 'next/image';
-import useSWR from 'swr';
 import React, { useState, useEffect } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
-
-const fetcher = (url: URL) => fetch(url).then((res) => res.json());
+import useStaleSWR from "@/utils/staleSWR";
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -29,9 +27,21 @@ function compare(key: any, order = 'asc') {
     return order === 'desc' ? comparison * -1 : comparison;
   };
 }
+const statusColor = (statusId: number) => {
+  switch (statusId) {
+    case 2:
+      return 'p-1 rounded bg-yellow-100 text-yellow-800';
+    case 3:
+      return 'p-1 rounded bg-green-100 text-green-800';
+    case 4:
+      return 'p-1 rounded bg-sky-100 text-sky-800';
+    default:
+      return 'p-1 rounded bg-gray-100 text-gray-800';
+  }
+};
 
 export default function Table({ slug }: { slug: string }) {
-  const { data: issues, mutate, isLoading } = useSWR(`/api/projects/${slug}/issues`, fetcher);
+  const { data: issues, mutate, isLoading } = useStaleSWR(`/api/projects/${slug}/issues`);
   const [issuesset, setDataset] = useState<any>(null);
   const [activeButton, setActiveButton] = useState<string>('all');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
@@ -55,7 +65,7 @@ export default function Table({ slug }: { slug: string }) {
 
   const onClickDone = () => {
     const done = issues.filter((issue: any) => issue.closed === true);
-    setDataset(done);
+    setDataset([...done]);
     setActiveButton('done');
   };
 
@@ -107,9 +117,9 @@ export default function Table({ slug }: { slug: string }) {
           <table className="min-w-full">
             <thead className="bg-gray-100 border-b border-gray-300">
               <tr className="h-12 w-full text-sm leading-none text-gray-800">
-                <th className="font-semibold text-left p-2"></th>
+                <th className="font-semibold text-center p-2">ID</th>
                 <th className="font-semibold text-left p-2">Issue</th>
-                <th className="font-semibold text-left p-2">Assigned to</th>
+                <th className="font-semibold text-left p-2 whitespace-nowrap">Assigned to</th>
                 <th className="font-semibold text-left p-2">Type</th>
                 <th className="font-semibold text-left p-2">Created</th>
                 <th className="font-semibold text-left p-2">Chat</th>
@@ -138,11 +148,11 @@ export default function Table({ slug }: { slug: string }) {
                 ))}
               {issuesset &&
                 issuesset.map((issue: any) => (
-                  <tr className="h-16" key={issue.id}>
-                    <td className="grow">
-                      <div className="ml-5"></div>
+                  <tr className="h-16 group" key={issue.id}>
+                    <td className="p-2">
+                      <div className="ml-5 opacity-60 group-hover:opacity-100">{issue.token}</div>
                     </td>
-                    <td className="w-1/2 p-2">
+                    <td className="grow w-1/4 p-2">
                       <div className="flex items-center gap-2">
                         <p className="text-base font-medium leading-none text-gray-700">{issue.title}</p>
                       </div>
@@ -153,7 +163,7 @@ export default function Table({ slug }: { slug: string }) {
                           {issue.assignees.slice(0, 3).map((assignee: any) => (
                             <div key={assignee.user.id} className="inline-block relative z-10 hover:z-30">
                               <Image
-                                className="h-8 w-8 rounded-full ring-2 ring-white hover:ring-sky-400"
+                                className="h-8 w-8 rounded-full ring-2 ring-gray-200 hover:ring-sky-400"
                                 src={assignee.user.image}
                                 alt={assignee.user.name}
                                 title={assignee.user.name}
@@ -195,7 +205,7 @@ export default function Table({ slug }: { slug: string }) {
                     </td>
                     <td className="whitespace-nowrap p-2">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm leading-none text-gray-600">{issue.status.title}</p>
+                        <p className={`text-sm leading-none ${statusColor(issue.statusId)}`}>{issue.status.title}</p>
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">

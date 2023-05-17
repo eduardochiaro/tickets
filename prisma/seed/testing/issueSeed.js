@@ -1,36 +1,41 @@
 const { PrismaClient } = require('@prisma/client');
-const { v4: uuidv4 } = require('uuid');
+const { customAlphabet } = require('nanoid');
+const { faker } = require('@faker-js/faker');
+const nanoid = customAlphabet('1234567890abcdef', 6);
 const prisma = new PrismaClient();
 
 const data = [
   {
-    token: uuidv4(),
-    title: 'Test Issue',
-    description: 'this is a testing issue',
+    token: nanoid(),
+    title: faker.lorem.lines(1),
+    description: faker.lorem.sentences(4),
     projectId: 1,
     typeId: 2,
     statusId: 1,
     ownerId: 2,
-		assignees: { create: [{ userId: 1 }, { userId: 2 }] }
+    createdAt: faker.date.recent({ days: 1 }) 
   },
   {
-    token: uuidv4(),
-    title: 'Test Issue 2',
-    description: 'this is a testing issue',
+    token: nanoid(),
+    title: faker.lorem.lines(1),
+    description: faker.lorem.sentences(3),
     projectId: 1,
     typeId: 1,
     statusId: 1,
     ownerId: 3,
-		assignees: { create: [{ userId: 1 }, { userId: 4 }, { userId: 5 }, { userId:8 }, { userId: 6 }] }
+		assignees: { create: [{ userId: 1 }, { userId: 4 }, { userId: 5 }, { userId:8 }, { userId: 6 }] },
+    createdAt: faker.date.recent({ days: 6 }) 
   },
   {
-    token: uuidv4(),
-    title: 'Test Issue 3',
-    description: 'this is a testing issue',
+    token: nanoid(),
+    title: faker.lorem.lines(1),
+    description: faker.lorem.sentences(5),
     projectId: 1,
     typeId: 3,
     statusId: 2,
     ownerId: 9,
+		assignees: { create: [{ userId: 8 }] },
+    createdAt: faker.date.recent({ days: 33 }) 
   }
 ];
 
