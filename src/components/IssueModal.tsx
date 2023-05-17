@@ -11,6 +11,7 @@ type IssueModalProps = {
     | (Issue & {
         assignees: User[];
         owner: User;
+				shortToken: String;
       })
     | null;
   onClose: () => void;
@@ -32,7 +33,10 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white p-8">
           <p>Issue</p>
-          <Dialog.Title className="text-3xl border-b pb-4">{issue?.title} <span className="opacity-60 text-xl">#{issue?.token}</span></Dialog.Title>
+          <Dialog.Title className="text-3xl border-b pb-4 group flex items-end gap-2">{issue?.title} 
+					<span className="group-hover:hidden opacity-60 text-xl">#{issue?.shortToken}</span>
+					<span className="hidden group-hover:inline opacity-60 text-xl">#{issue?.token}</span>
+					</Dialog.Title>
           <Dialog.Description className="pb-5 grid grid-cols-3 gap-4" as="div">
             <div className="grid grid-cols-2 gap-4 col-span-2 pt-4 pr-4 border-r">
               <div className="col-span-2 p-4 bg-gray-200 text-sm">

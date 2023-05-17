@@ -117,7 +117,7 @@ export default function Table({ slug }: { slug: string }) {
           <table className="min-w-full">
             <thead className="bg-gray-100 border-b border-gray-300">
               <tr className="h-12 w-full text-sm leading-none text-gray-800">
-                <th className="font-semibold text-center p-2">ID</th>
+                <th className="font-semibold text-left p-2 pl-5">ID</th>
                 <th className="font-semibold text-left p-2">Issue</th>
                 <th className="font-semibold text-left p-2 whitespace-nowrap">Assigned to</th>
                 <th className="font-semibold text-left p-2">Type</th>
@@ -150,7 +150,7 @@ export default function Table({ slug }: { slug: string }) {
                 issuesset.map((issue: any) => (
                   <tr className="h-16 group" key={issue.id}>
                     <td className="p-2">
-                      <div className="ml-5 opacity-60 group-hover:opacity-100">{issue.token}</div>
+                      <div className="ml-5 opacity-60 group-hover:opacity-100 font-mono text-sm">{issue.shortToken}</div>
                     </td>
                     <td className="grow w-1/4 p-2">
                       <div className="flex items-center gap-2">

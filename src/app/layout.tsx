@@ -1,8 +1,18 @@
 import AuthProvider from './auth-provider';
 import './globals.css';
-import { Inter } from 'next/font/google';
-
-const inter = Inter({ subsets: ['latin'] });
+import { Inter, Roboto_Mono, Noto_Sans_Mono } from 'next/font/google';
+ 
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-inter',
+});
+ 
+const mono = Noto_Sans_Mono({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-noto-mono',
+});
 
 export const metadata = {
   title: 'Tickets',
@@ -11,9 +21,8 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head></head>
-      <body className={inter.className}>
+    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
+      <body>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

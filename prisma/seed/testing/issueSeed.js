@@ -1,7 +1,7 @@
 const { PrismaClient } = require('@prisma/client');
 const { customAlphabet } = require('nanoid');
 const { faker } = require('@faker-js/faker');
-const nanoid = customAlphabet('1234567890abcdef', 6);
+const nanoid = customAlphabet('1234567890abcdef', 16);
 const prisma = new PrismaClient();
 
 const data = [

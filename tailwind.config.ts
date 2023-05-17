@@ -7,6 +7,11 @@ export default {
   darkMode: 'class',
   plugins: [],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['var(--font-inter)'],
+        mono: ['var(--font-noto-mono)'],
+      },
+		},
   },
 } satisfies Config;
