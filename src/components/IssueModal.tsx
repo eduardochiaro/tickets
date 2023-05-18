@@ -35,8 +35,8 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white p-8">
           <p>Issue</p>
-          <Dialog.Title className="text-3xl border-b pb-4 group flex items-end gap-2">{issue?.title} 
-					<span className="opacity-60 text-xl flex items-center">
+          <Dialog.Title className="text-3xl border-b pb-4 group">{issue?.title} 
+					<span className="opacity-60 text-xl ml-2 inline-flex items-center">
 						<HashtagIcon className="h-4"/>
 						<span className="group-hover:hidden">{issue?.shortToken}</span>
 						<span className="hidden group-hover:inline">{issue?.token}</span>
