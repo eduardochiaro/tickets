@@ -40,8 +40,9 @@ const statusColor = (statusId: number) => {
   }
 };
 
-export default function Table({ slug }: { slug: string }) {
-  const { data: issues, mutate, isLoading } = useStaleSWR(`/api/projects/${slug}/issues`);
+export default function Table({ slug, type }: { slug: string, type: string }) {
+	const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
+  const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesset, setDataset] = useState<any>(null);
   const [activeButton, setActiveButton] = useState<string>('all');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
@@ -85,7 +86,7 @@ export default function Table({ slug }: { slug: string }) {
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
         <div className="flex items-center justify-between">
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">Issues</p>
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? "Issues" : "My Issues"}</p>
           <div className="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
             <p>Sort By:</p>
             <select className="focus:outline-none bg-transparent ml-1" onChange={(e) => sortByDate(e)}>

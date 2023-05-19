@@ -6,21 +6,20 @@ import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { TicketIcon } from '@heroicons/react/24/solid';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-
-const navigation = [
-  { name: 'Dashboard', href: '#', current: true },
-  { name: 'Team', href: '#', current: false },
-  { name: 'Projects', href: '#', current: false },
-  { name: 'Calendar', href: '#', current: false },
-];
+import { Project } from '@prisma/client';
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar({ name }: { name: string }) {
+export default function Navbar({ project }: { project: Project }) {
   const { data: session } = useSession();
-  navigation[0].name = name;
+
+	const navigation = [
+		{ name: project.title, href: `/p/${project.slug}`, current: true },
+		{ name: 'My Issues', href: `/p/${project.slug}/me`, current: false },
+	];
+	
   return (
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (

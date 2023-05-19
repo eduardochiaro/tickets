@@ -74,6 +74,7 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
               <p className="mt-2 text-sm">created: {moment(issue?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
               <p className="text-xs">({moment(issue?.createdAt).fromNow()})</p>
 							</div>
+							<div className="grid grid-cols-2 gap-4">
 							<div className="flex flex-col">
                 <label htmlFor="status" className="text-sm font-semibold">
                   Status
@@ -131,6 +132,8 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
                   </div>
                 </div>
               </div>
+							</div>
+							
             </div>
 
           </Dialog.Description>
