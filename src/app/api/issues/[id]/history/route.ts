@@ -15,6 +15,9 @@ export async function GET(
     where: {
       issueId,
     },
+    orderBy: {
+      createdAt: 'desc',
+    },
   });
 
   if (history) {

@@ -24,7 +24,32 @@ const data = [
     statusId: 1,
     ownerId: 3,
 		assignees: { create: [{ userId: 1 }, { userId: 4 }, { userId: 5 }, { userId:8 }, { userId: 6 }] },
-    createdAt: faker.date.recent({ days: 6 }) 
+    createdAt: faker.date.recent({ days: 6 }),
+    history: {
+      create: [
+        {
+          message: faker.lorem.sentences(2),
+          userId: 3,
+          status: 'In Progress',
+          type: 'Task',
+          createdAt: faker.date.recent({ days: 6 })
+        },
+        {
+          message: faker.lorem.sentences(2),
+          userId: 1,
+          status: 'In Progress',
+          type: 'Task',
+          createdAt: faker.date.recent({ days: 5 })
+        },
+        {
+          message: faker.lorem.sentences(2),
+          userId: 4,
+          status: 'In Progress',
+          type: 'Task',
+          createdAt: faker.date.recent({ days: 4 })
+        },
+      ]
+    } 
   },
   {
     token: nanoid(),

@@ -33,7 +33,7 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
     <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-4xl rounded-lg bg-white p-8">
+        <Dialog.Panel className="w-full max-w-5xl rounded-lg bg-white p-8">
           <p>Issue</p>
           <Dialog.Title className="text-3xl border-b pb-4 group">{issue?.title} 
 					<span className="opacity-60 text-xl ml-2 inline-flex items-center">
@@ -43,16 +43,16 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
 					</span>
 					</Dialog.Title>
           <Dialog.Description className="pb-5 grid grid-cols-2 gap-4" as="div">
-            <div className="pt-4 pr-4 border-r">
+            <div className="pt-4 pr-4 border-r flex flex-col">
               <div className="col-span-2 p-4 bg-gray-200 text-sm">
                 <h4 className="text-base font-semibold pb-2">Description</h4>
                 {issue?.description}
               </div>
 								<div className="col-span-2">
 								<h3 className="text-xl font-semibold mt-4 mb-2">History</h3>
-								<ul className="px-2">
+								<ul className="space-y-2 p-2 overflow-y-auto max-h-60">
 									{history?.map((row: IssueHistory) => (
-									<li className="text-xs">[{moment(row.createdAt).format('MM/DD/YY h:mm a')}] {row.message}</li>
+									<li className="text-xs p-2 rounded bg-gray-100">[{moment(row.createdAt).format('MM/DD/YY h:mm a')}] {row.message}</li>
 									))}
 								</ul>
 							</div>
