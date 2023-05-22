@@ -44,10 +44,7 @@ const authOptions: NextAuthOptions = {
       return {
         ...session,
       };
-    },
-    redirect({ url, baseUrl }) {
-      return new URL(url, baseUrl).toString();
-    },
+    }
   },
   pages: {
     signIn: '/auth/signin',
