@@ -1,6 +1,6 @@
 import AuthProvider from './auth-provider';
 import './globals.css';
-import { Inter, Roboto_Mono, Noto_Sans_Mono } from 'next/font/google';
+import { Inter, Noto_Sans_Mono } from 'next/font/google';
  
 const inter = Inter({
   subsets: ['latin'],

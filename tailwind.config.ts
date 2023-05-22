@@ -6,6 +6,7 @@ export default {
   ],
   darkMode: 'class',
   plugins: [],
+  important: true,
   theme: {
     extend: {
       fontFamily: {

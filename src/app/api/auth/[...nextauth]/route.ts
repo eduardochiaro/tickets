@@ -9,7 +9,7 @@ interface ExtendedUser extends NextAuthUser {
   roles: string[];
 }
 
-const { GITHUB_ID = '', GITHUB_SECRET = '', GOOGLE_CLIENT_ID = '', GOOGLE_CLIENT_SECRET = '', NEXTAUTH_SECRET = '' } = process.env;
+const { GITHUB_ID = '', GITHUB_SECRET = '', NEXTAUTH_SECRET = '' } = process.env;
 
 const authOptions: NextAuthOptions = {
   secret: NEXTAUTH_SECRET,
@@ -45,6 +45,12 @@ const authOptions: NextAuthOptions = {
         ...session,
       };
     },
+    redirect({ url, baseUrl }) {
+      return new URL(url, baseUrl).toString();
+    },
+  },
+  pages: {
+    signIn: '/auth/signin',
   },
 };
 
