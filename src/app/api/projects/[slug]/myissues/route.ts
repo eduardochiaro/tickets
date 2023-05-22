@@ -20,18 +20,18 @@ export async function GET(
   const session = await getServerSession(authOptions);
   const slug = params.slug;
 
-	const user = session?.user as ExtendedUser;
+  const user = session?.user as ExtendedUser;
 
   const issues = await prisma.issue.findMany({
     where: {
       project: {
         slug,
       },
-			assignees: {
-				some: {
-					userId: parseInt(user.id)
-				}
-			}
+      assignees: {
+        some: {
+          userId: parseInt(user.id),
+        },
+      },
     },
     orderBy: {
       createdAt: 'desc',

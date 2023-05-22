@@ -10,9 +10,15 @@ export default async function Project({ params, children }: { params: { slug: st
     return <>NO</>;
   }
   const project = await getData(params.slug);
+
+  const navigation = [
+    { name: project.title, href: `/p/${project.slug}`, current: true },
+    { name: 'My Issues', href: `/p/${project.slug}/me`, current: false },
+  ];
+
   return (
     <main className="flex flex-col min-h-screen">
-      <Navbar project={project} />
+      <Navbar navigation={navigation} />
       <section className="mx-auto container px-2 sm:px-6 lg:px-8">{children}</section>
     </main>
   );

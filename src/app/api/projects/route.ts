@@ -1,19 +1,9 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import prisma from '@/utils/prisma';
 
-export async function GET(
-  request: NextRequest,
-  {
-    params,
-  }: {
-    params: { slug: string };
-  },
-) {
-  const slug = params.slug;
-
-  const project = await prisma.project.findFirst({
+export async function GET(request: NextRequest) {
+  const project = await prisma.project.findMany({
     where: {
-      slug,
       published: true,
     },
   });

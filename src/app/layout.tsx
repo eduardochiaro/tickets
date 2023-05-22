@@ -1,13 +1,13 @@
 import AuthProvider from './auth-provider';
 import './globals.css';
 import { Inter, Noto_Sans_Mono } from 'next/font/google';
- 
+
 const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-inter',
 });
- 
+
 const mono = Noto_Sans_Mono({
   subsets: ['latin'],
   display: 'swap',

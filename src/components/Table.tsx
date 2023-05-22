@@ -6,7 +6,7 @@ import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
-import useStaleSWR from "@/utils/staleSWR";
+import useStaleSWR from '@/utils/staleSWR';
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -40,8 +40,8 @@ const statusColor = (statusId: number) => {
   }
 };
 
-export default function Table({ slug, type }: { slug: string, type: string }) {
-	const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
+export default function Table({ slug, type }: { slug: string; type: string }) {
+  const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesset, setDataset] = useState<any>(null);
   const [activeButton, setActiveButton] = useState<string>('all');
@@ -86,7 +86,7 @@ export default function Table({ slug, type }: { slug: string, type: string }) {
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
         <div className="flex items-center justify-between">
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? "Issues" : "My Issues"}</p>
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? 'Issues' : 'My Issues'}</p>
           <div className="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
             <p>Sort By:</p>
             <select className="focus:outline-none bg-transparent ml-1" onChange={(e) => sortByDate(e)}>
