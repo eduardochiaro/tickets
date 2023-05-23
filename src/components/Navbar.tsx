@@ -4,9 +4,9 @@ import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { TicketIcon } from '@heroicons/react/24/solid';
+import { TicketIcon as TicketOutlineIcon } from '@heroicons/react/24/outline';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { Project } from '@prisma/client';
 import Link from 'next/link';
 
 function classNames(...classes: string[]) {
@@ -31,7 +31,7 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
               </div>
               <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                 <div className="flex flex-shrink-0 items-center">
-                  <TicketIcon className="block h-10 text-sky-600" aria-hidden="true" title="Ticket" />
+                  <TicketIcon className="h-10 text-sky-600 -rotate-[20deg] hover:-rotate-45 transition-all duration-300 ease-in-out" aria-hidden="true" title="Tickets" />
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">

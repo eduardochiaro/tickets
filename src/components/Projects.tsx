@@ -14,7 +14,7 @@ export default function Projects() {
           <div className="px-4 py-5 sm:px-6">
             <h3 className="text-lg leading-6 font-medium text-gray-900">{project.title}</h3>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">{project.description}</p>
-            <Link href="/p/[id]" as={`/p/${project.slug}`} className="text-indigo-600 hover:text-indigo-900">
+            <Link href={`/p/${project.slug}`} prefetch={false} className="text-indigo-600 hover:text-indigo-900">
               View
             </Link>
           </div>

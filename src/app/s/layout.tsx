@@ -21,6 +21,6 @@ export default async function Project({ children }: { children: React.ReactNode 
   );
 }
 
-export function generateMetadata(): Metadata {
-  return { title: 'Profile | Tickets' };
-}
+export const metadata = {
+  title: 'Profile | Tickets',
+};
