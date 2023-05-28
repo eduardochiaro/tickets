@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
 import useStaleSWR from '@/utils/staleSWR';
+import shortToken from '@/utils/shortToken';
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -151,7 +152,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                 issuesset.map((issue: any) => (
                   <tr className="h-16 group" key={issue.id}>
                     <td className="p-2">
-                      <div className="ml-5 opacity-60 group-hover:opacity-100 font-mono text-sm">{issue.shortToken}</div>
+                      <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
                     </td>
                     <td className="w-full p-2">
                       <div className="flex items-center gap-2">

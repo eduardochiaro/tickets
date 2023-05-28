@@ -1,6 +1,4 @@
-import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
-import prisma from '@/utils/prisma';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import { getServerSession } from 'next-auth';
 

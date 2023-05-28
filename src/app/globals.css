@@ -23,3 +23,9 @@ body {
 .btn-gray:hover {
   @apply bg-gray-400 text-gray-900;
 }
+.input-label {
+  @apply text-sm font-semibold;
+}
+.input-field { 
+  @apply border border-gray-300 rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500;
+}

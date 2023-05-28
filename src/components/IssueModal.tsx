@@ -4,8 +4,9 @@ import { Dialog } from '@headlessui/react';
 import useStaleSWR from '../utils/staleSWR';
 import Image from 'next/image';
 import moment from 'moment';
-import { XCircleIcon } from '@heroicons/react/24/solid';
-import { HashtagIcon } from '@heroicons/react/24/outline';
+import { DocumentIcon, HashtagIcon } from '@heroicons/react/24/outline';
+import shortToken from '@/utils/shortToken';
+import { Select, Tags } from "@/form";
 
 type IssueModalProps = {
   issue:
@@ -34,30 +35,34 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
       <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
       <div className="fixed inset-0 flex items-center justify-center p-4">
         <Dialog.Panel className="w-full max-w-5xl rounded-lg bg-white p-8">
-          <p>Issue</p>
-          <Dialog.Title className="text-3xl border-b pb-4 group">
-            {issue?.title}
-            <span className="opacity-60 text-xl ml-2 inline-flex items-center">
-              <HashtagIcon className="h-4" />
-              <span className="group-hover:hidden">{issue?.shortToken}</span>
-              <span className="hidden group-hover:inline">{issue?.token}</span>
+          <h3 className="group text-xl flex items-center gap-1">
+            <DocumentIcon className="h-4" />
+            Issue
+            <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
+              <HashtagIcon className="h-3" />
+              <span className="group-hover:hidden">{shortToken(issue?.token)}</span>
+              <span className="opacity-0 group-hover:opacity-100">{issue?.token}</span>
             </span>
-          </Dialog.Title>
+          </h3>
+          <Dialog.Title className="text-3xl border-b pb-4 group">{issue?.title}</Dialog.Title>
           <Dialog.Description className="pb-5 grid grid-cols-2 gap-4" as="div">
             <div className="pt-4 pr-4 border-r flex flex-col">
-              <div className="col-span-2 p-4 bg-gray-200 text-sm">
+              <div className="col-span-2 p-4 bg-gray-200 text-sm m-1 ring-offset-2 ring-2 ring-gray-100 rounded ">
                 <h4 className="text-base font-semibold pb-2">Description</h4>
                 {issue?.description}
               </div>
               <div className="col-span-2">
                 <h3 className="text-xl font-semibold mt-4 mb-2">History</h3>
-                <ul className="space-y-2 p-2 overflow-y-auto max-h-60">
-                  {history?.map((row: IssueHistory) => (
-                    <li key={row.id} className="text-xs p-2 rounded bg-gray-100">
-                      [{moment(row.createdAt).format('MM/DD/YY h:mm a')}] {row.message}
-                    </li>
-                  ))}
-                </ul>
+                {history?.length === 0 && <p className="text-sm text-center opacity-75">No history yet.</p>}
+                {history?.length > 0 && (
+                  <ul className="space-y-2 p-2 overflow-y-auto max-h-60">
+                    {history?.map((row: IssueHistory) => (
+                      <li key={row.id} className="text-xs p-2 rounded bg-gray-100">
+                        [{moment(row.createdAt).format('MM/DD/YY h:mm a')}] {row.message}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </div>
             <div className="pt-4 space-y-3">
@@ -79,69 +84,35 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col">
-                  <label htmlFor="status" className="text-sm font-semibold">
-                    Status
-                  </label>
-                  <select
-                    disabled={true}
-                    name="status"
-                    onChange={() => null}
-                    value={issue?.statusId}
-                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                  >
+                  <Select label="Status" name="status" disabled={true} value={issue?.statusId as unknown as string}>
                     {status?.map((s: Status) => (
                       <option key={s.id} value={s.id}>
                         {s.title}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
                 <div className="flex flex-col">
-                  <label htmlFor="type" className="text-sm font-semibold">
-                    Type
-                  </label>
-                  <select
-                    disabled={true}
-                    name="type"
-                    onChange={() => null}
-                    value={issue?.typeId}
-                    className="border border-gray-300 rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
-                  >
+                  <Select label="Type" name="type" disabled={true} value={issue?.typeId as unknown as string}>
                     {types?.map((s: Type) => (
                       <option key={s.id} value={s.id}>
                         {s.title}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
                 <div className="flex flex-col col-span-2">
-                  <label htmlFor="assignees" className="text-sm font-semibold">
-                    Assignees
-                  </label>
-                  <div className="flex flex-wrap items-center gap-2 border border-gray-300 rounded-md px-3 py-2 mt-1 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
-                    {issue?.assignees?.map((a: any) => (
-                      <div
-                        key={a.user.id}
-                        className="group relative text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-sky-600 bg-sky-200 flex-nowrap"
-                      >
-                        {a.user.name}
-                        <button className="hidden group-hover:block absolute -top-2 -right-2 text-red-500 cursor-pointer">
-                          <XCircleIcon className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                    <div className="relative grow inline-block text-left">
-                      <input className="w-full bg-transparent border-0 py-0 focus:ring-0 min-w-fit px-2" placeholder="Add assignee" onChange={() => null} />
-                    </div>
-                  </div>
+                  <Tags label="Assignees" name="assignees" placeholder="add new person..." value={issue?.assignees?.map( (a:any) => a.user) as []} updateItem={() => null} />
+                  
                 </div>
               </div>
             </div>
           </Dialog.Description>
-
-          <button onClick={() => setIsOpen(false)} className="btn">
-            Close
-          </button>
+          <div className="flex justify-end gap-2 mt-4">
+            <button onClick={() => setIsOpen(false)} className="btn">
+              Close
+            </button>
+          </div>
         </Dialog.Panel>
       </div>
     </Dialog>
