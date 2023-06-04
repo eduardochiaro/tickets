@@ -83,6 +83,10 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
     }
   };
 
+  const onModalClose = () => {
+    setCurrentIssue(null);
+  };
+
   return (
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
@@ -221,7 +225,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
           </table>
         </div>
       </div>
-      <IssueModal issue={currentIssue} onClose={() => null} />
+      <IssueModal issue={currentIssue} onClose={() => onModalClose()} />
     </>
   );
 }

@@ -29,6 +29,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
     useEffect(() => {
       const delayDebounceFn = setTimeout(async () => {
         if (searchTerm.length >= 3) {
+          resetSearch();
           const res = await fetch(`${api}?text=${searchTerm}`);
           const elementSearch = await res.json();
           const currentElements = pluck(value, 'id');
@@ -39,7 +40,6 @@ const Tags = forwardRef<Ref, FormInputProps>(
           }
         }
       }, 500);
-      resetSearch();
       return () => clearTimeout(delayDebounceFn);
     }, [searchTerm, value]);
 
