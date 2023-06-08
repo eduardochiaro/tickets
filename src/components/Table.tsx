@@ -8,6 +8,8 @@ import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
 import useStaleSWR from '@/utils/staleSWR';
 import shortToken from '@/utils/shortToken';
+import { Listbox } from "@headlessui/react";
+import { CheckIcon } from "@heroicons/react/20/solid";
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -41,12 +43,24 @@ const statusColor = (statusId: number) => {
   }
 };
 
+const sortOptions = [
+  {
+    id: "latest",
+    name: "Latest",
+  },
+  {
+    id: "oldest",
+    name: "Oldest",
+  },
+]
+
 export default function Table({ slug, type }: { slug: string; type: string }) {
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesset, setDataset] = useState<any>(null);
   const [activeButton, setActiveButton] = useState<string>('all');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
+  const [sort, setSort] = useState('latest');
 
   useEffect(() => {
     if (issues) {
@@ -71,8 +85,8 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
     setActiveButton('done');
   };
 
-  const sortByDate = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const order = event.target.value;
+  const sortByDate = (order: string) => {
+    setSort(order);
     const filted = activeButton === 'all' ? issues : issuesset;
     if (order === 'latest') {
       const sorted = filted.sort(compare('createdAt', 'desc'));
@@ -87,21 +101,49 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
     setCurrentIssue(null);
   };
 
+  const getSort = (sort: string) => {
+    return sortOptions.filter((option) => option.id === sort)[0].name;
+  }
+
   return (
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
         <div className="flex items-center justify-between">
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? 'Issues' : 'My Issues'}</p>
-          <div className="py-3 px-4 flex items-center text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
+          <div className="relative py-3 px-4 flex items-center gap-1 text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
             <p>Sort By:</p>
-            <select className="focus:outline-none bg-transparent ml-1" onChange={(e) => sortByDate(e)}>
-              <option className="text-sm text-indigo-800" value={`latest`}>
-                Latest
-              </option>
-              <option className="text-sm text-indigo-800" value={`oldest`}>
-                Oldest
-              </option>
-            </select>
+            <Listbox value={sort} onChange={(e) => sortByDate(e)}>
+              <Listbox.Button>{ getSort(sort)}</Listbox.Button>
+              <Listbox.Options className="absolute top-10 right-0 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                { sortOptions.map((option, index) => (
+                  <Listbox.Option 
+                    key={index} 
+                    value={option.id}
+                    className={({ active }) =>
+                      `relative flex-nowrap cursor-default select-none py-2 pl-10 pr-4 ${
+                        active ? 'bg-sky-100 text-sky-900' : 'text-gray-900'
+                      }`
+                    }>
+                      {({ selected }) => (
+                    <>
+                      <span
+                        className={`block ${
+                          selected ? 'font-medium' : 'font-normal'
+                        }`}
+                      >
+                      {option.name}
+                      </span>
+                      {selected ? (
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600">
+                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                        </span>
+                      ) : null}
+                    </>
+                  )}
+                  </Listbox.Option>
+                ))}
+              </Listbox.Options>
+            </Listbox>
           </div>
         </div>
       </div>
