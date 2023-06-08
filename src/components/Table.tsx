@@ -3,12 +3,12 @@
 import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import moment from 'moment';
 import Image from 'next/image';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
 import useStaleSWR from '@/utils/staleSWR';
 import shortToken from '@/utils/shortToken';
-import { Listbox } from "@headlessui/react";
+import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon } from "@heroicons/react/20/solid";
 
 function compare(key: any, order = 'asc') {
@@ -114,35 +114,45 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
             <p>Sort By:</p>
             <Listbox value={sort} onChange={(e) => sortByDate(e)}>
               <Listbox.Button>{ getSort(sort)}</Listbox.Button>
-              <Listbox.Options className="absolute top-10 right-0 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                { sortOptions.map((option, index) => (
-                  <Listbox.Option 
-                    key={index} 
-                    value={option.id}
-                    className={({ active }) =>
-                      `relative flex-nowrap cursor-default select-none py-2 pl-10 pr-4 ${
-                        active ? 'bg-sky-100 text-sky-900' : 'text-gray-900'
-                      }`
-                    }>
-                      {({ selected }) => (
-                    <>
-                      <span
-                        className={`block ${
-                          selected ? 'font-medium' : 'font-normal'
-                        }`}
-                      >
-                      {option.name}
-                      </span>
-                      {selected ? (
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600">
-                          <CheckIcon className="h-5 w-5" aria-hidden="true" />
+              <Transition
+                as={Fragment}
+                enter="ease-out duration-300"
+                enterFrom="opacity-0 scale-95"
+                enterTo="opacity-100 scale-100"
+                leave="ease-in duration-200"
+                leaveFrom="opacity-100 scale-100"
+                leaveTo="opacity-0 scale-95"
+              >
+                <Listbox.Options className="absolute top-10 right-0 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  { sortOptions.map((option, index) => (
+                    <Listbox.Option 
+                      key={index} 
+                      value={option.id}
+                      className={({ active }) =>
+                        `relative flex-nowrap cursor-default select-none py-2 pl-10 pr-4 ${
+                          active ? 'bg-sky-100 text-sky-900' : 'text-gray-900'
+                        }`
+                      }>
+                        {({ selected }) => (
+                      <>
+                        <span
+                          className={`block ${
+                            selected ? 'font-medium' : 'font-normal'
+                          }`}
+                        >
+                        {option.name}
                         </span>
-                      ) : null}
-                    </>
-                  )}
-                  </Listbox.Option>
-                ))}
-              </Listbox.Options>
+                        {selected ? (
+                          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-sky-600">
+                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
+                          </span>
+                        ) : null}
+                      </>
+                    )}
+                    </Listbox.Option>
+                  ))}
+                </Listbox.Options>
+              </Transition>
             </Listbox>
           </div>
         </div>
