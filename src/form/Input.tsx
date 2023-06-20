@@ -1,3 +1,5 @@
+'use client';
+
 import { ExclamationTriangleIcon } from '@heroicons/react/20/solid';
 import moment from 'moment';
 import { forwardRef, DetailedHTMLProps, InputHTMLAttributes } from 'react';

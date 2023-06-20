@@ -1,3 +1,5 @@
+'use client';
+
 import { ExclamationTriangleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 import { forwardRef, DetailedHTMLProps, InputHTMLAttributes, Fragment, useRef, useState, useEffect } from 'react';
 import { Menu } from '@headlessui/react';
@@ -20,7 +22,23 @@ export type FormInputProps = {
 export type Ref = HTMLInputElement;
 
 const Tags = forwardRef<Ref, FormInputProps>(
-  ({ id = '', type = 'text', name = '', label = '', value = [], placeholder = '', invalid = false, api = "/api/users", updateItem, className, addNew = false, ...props }, ref) => {
+  (
+    {
+      id = '',
+      type = 'text',
+      name = '',
+      label = '',
+      value = [],
+      placeholder = '',
+      invalid = false,
+      api = '/api/users',
+      updateItem,
+      className,
+      addNew = false,
+      ...props
+    },
+    ref,
+  ) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [openMenu, setOpenMenu] = useState(false);
@@ -87,7 +105,13 @@ const Tags = forwardRef<Ref, FormInputProps>(
             <Fragment key={`element-${key}`}>
               {!element.deleted && (
                 <span className="relative group">
-                  <span className={`group relative text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-sky-600 flex-nowrap ${element.new ? 'bg-red-200' : 'bg-sky-200'}`}>{element.name}</span>
+                  <span
+                    className={`group relative text-xs font-semibold inline-block py-1 px-2 uppercase rounded text-sky-600 flex-nowrap ${
+                      element.new ? 'bg-red-200' : 'bg-sky-200'
+                    }`}
+                  >
+                    {element.name}
+                  </span>
                   <XCircleIcon
                     className="hidden group-hover:block h-4 w-4 absolute -top-2 -right-2 text-red-500 cursor-pointer"
                     onClick={() => removeTag(key)}
@@ -123,12 +147,12 @@ const Tags = forwardRef<Ref, FormInputProps>(
                     <div className="px-1 py-5">
                       <p className="text-center opacity-70">No results found</p>
                     </div>
-                    { addNew && (
-                    <div className="p-3 text-center">
-                      <button type="button" className="button" onClick={() => addTag({ name: searchTerm, id: null })}>
-                        Add &quot;<strong>{searchTerm}</strong>&quot; as new element
-                      </button>
-                    </div>
+                    {addNew && (
+                      <div className="p-3 text-center">
+                        <button type="button" className="button" onClick={() => addTag({ name: searchTerm, id: null })}>
+                          Add &quot;<strong>{searchTerm}</strong>&quot; as new element
+                        </button>
+                      </div>
                     )}
                   </>
                 )}

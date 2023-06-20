@@ -1,5 +1,12 @@
 import { type NextRequest, NextResponse } from 'next/server';
+import { redirect } from 'next/navigation';
 import prisma from '@/utils/prisma';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import ExtendedUser from "@/models/ExtendedUser";
+import { customAlphabet } from "nanoid";
+
+const nanoid = customAlphabet('1234567890abcdef', 16);
 
 export async function GET(
   request: NextRequest,
@@ -54,4 +61,56 @@ export async function GET(
   if (issues) {
     return NextResponse.json(issues);
   }
+}
+
+
+export async function POST(
+  request: NextRequest,
+  {
+    params,
+  }: {
+    params: { slug: string };
+  },
+) {
+  const slug = params.slug;
+  const session = await getServerSession(authOptions);
+  const user = session?.user as ExtendedUser;
+
+
+  const { title, type, description } = await request.json();
+
+  const issue = await prisma.issue.create({
+    data: {
+      token: nanoid(),
+      title,
+      type: {
+        connect: {
+          id: parseInt(type)
+        }
+      },
+      status: {
+        connect: {
+          id: 1,
+        }
+      },
+      description,
+      owner: {
+        connect: {
+          id: parseInt(user.id),
+        }
+      },
+      project: {
+        connect: {
+          slug,
+        },
+      }
+    },
+  });
+  if (issue) {
+    redirect(`/p/${slug}`);
+  }
+
+  return new Response(null, {
+    status: 400,
+  });
 }

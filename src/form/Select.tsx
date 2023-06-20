@@ -1,3 +1,5 @@
+'use client';
+
 import { ExclamationTriangleIcon } from '@heroicons/react/24/solid';
 import { forwardRef, ReactNode, DetailedHTMLProps, InputHTMLAttributes } from 'react';
 

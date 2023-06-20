@@ -2,12 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import prisma from '@/utils/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import { User as NextAuthUser } from 'next-auth';
-
-interface ExtendedUser extends NextAuthUser {
-  id: string;
-  roles: string[];
-}
+import ExtendedUser from "@/models/ExtendedUser";
 
 export async function GET(
   request: NextRequest,

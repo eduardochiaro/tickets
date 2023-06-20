@@ -6,7 +6,7 @@ import Image from 'next/image';
 import moment from 'moment';
 import { DocumentIcon, HashtagIcon } from '@heroicons/react/24/outline';
 import shortToken from '@/utils/shortToken';
-import { Select, Tags } from "@/form";
+import { Select, Tags } from '@/form';
 
 type IssueModalProps = {
   issue:
@@ -40,27 +40,27 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog onClose={() => handleClose()} className="relative z-50">
         <Transition.Child
-            as={Fragment}
-            enter="ease-out duration-300"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-200"
-            leaveFrom="opacity-100"
-            leaveTo="opacity-0"
-          >
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
           <div className="fixed inset-0 bg-black bg-opacity-25" />
         </Transition.Child>
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm" aria-hidden="true" />
-        <div className="fixed inset-0 flex items-center justify-center p-4">              
+        <div className="fixed inset-0 flex items-center justify-center p-4">
           <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-200"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
+            as={Fragment}
+            enter="ease-out duration-300"
+            enterFrom="opacity-0 scale-95"
+            enterTo="opacity-100 scale-100"
+            leave="ease-in duration-200"
+            leaveFrom="opacity-100 scale-100"
+            leaveTo="opacity-0 scale-95"
+          >
             <Dialog.Panel className="w-full max-w-5xl rounded-lg bg-white p-8">
               <h3 className="group text-xl flex items-center gap-1">
                 <DocumentIcon className="h-4" />
@@ -97,17 +97,17 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
                     <h3 className="text-xl font-semibold mb-2">Owner</h3>
                     {issue?.owner === null && <p className="text-sm text-center opacity-75">No owner yet.</p>}
                     {issue && issue?.owner !== null && (
-                    <div className="flex items-center gap-2 group">
-                      <Image
-                        className="h-6 w-6 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
-                        src={issue?.owner?.image || ''}
-                        alt={issue?.owner?.name || ''}
-                        title={issue?.owner?.name || ''}
-                        width={100}
-                        height={100}
-                      />
-                      {issue?.owner?.name}
-                    </div>
+                      <div className="flex items-center gap-2 group">
+                        <Image
+                          className="h-6 w-6 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
+                          src={issue?.owner?.image || ''}
+                          alt={issue?.owner?.name || ''}
+                          title={issue?.owner?.name || ''}
+                          width={100}
+                          height={100}
+                        />
+                        {issue?.owner?.name}
+                      </div>
                     )}
                     <div className="flex items-center gap-2 mt-2 ">
                       <p className="text-sm">created: {moment(issue?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
@@ -134,7 +134,13 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
                       </Select>
                     </div>
                     <div className="flex flex-col col-span-2">
-                      <Tags label="Assignees" name="assignees" placeholder="add new person..." value={issue?.assignees?.map( (a:any) => a.user) as []} updateItem={() => null} />
+                      <Tags
+                        label="Assignees"
+                        name="assignees"
+                        placeholder="add new person..."
+                        value={issue?.assignees?.map((a: any) => a.user) as []}
+                        updateItem={() => null}
+                      />
                     </div>
                   </div>
                 </div>
