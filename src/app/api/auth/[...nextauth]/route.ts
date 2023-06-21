@@ -13,7 +13,7 @@ const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: GITHUB_ID,
       clientSecret: GITHUB_SECRET,
-    }),
+    })
     // ...add more providers here
   ],
   session: {

@@ -18,7 +18,7 @@ const LogoProvider = ({ id }: { id: string }) => {
 const ShowProviders = async function ShowProviders() {
   const providers = await getProviders();
   return (
-    <>
+    <div className="flex flex-col gap-4">
       {providers &&
         Object.values(providers).map((provider) => (
           <div key={provider.name}>
@@ -28,7 +28,7 @@ const ShowProviders = async function ShowProviders() {
             </button>
           </div>
         ))}
-    </>
+    </div>
   );
 };
 
