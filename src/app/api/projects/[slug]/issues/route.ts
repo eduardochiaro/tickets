@@ -76,7 +76,6 @@ export async function POST(
   const session = await getServerSession(authOptions);
   const user = session?.user as ExtendedUser;
 
-
   const { title, type, description } = await request.json();
 
   const issue = await prisma.issue.create({
@@ -107,7 +106,7 @@ export async function POST(
     },
   });
   if (issue) {
-    redirect(`/p/${slug}`);
+    return NextResponse.json(issue);
   }
 
   return new Response(null, {

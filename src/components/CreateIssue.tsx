@@ -4,9 +4,11 @@ import { Input, Select, Textarea } from '@/form';
 import useStaleSWR from '@/utils/staleSWR';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import axios from "axios";
-import { redirect } from "next/navigation";
+import { useRouter } from 'next/navigation'
+import { NextResponse } from "next/server";
 
 export default function CreateIssue({ slug }: { slug: string; }) {
+  const router = useRouter();
   const { data: types } = useStaleSWR(`/api/types`);
 
   const initialFormData = {
@@ -30,7 +32,7 @@ export default function CreateIssue({ slug }: { slug: string; }) {
         'Content-Type': 'multipart/form-data'
       }
     }).then((res) => {
-      redirect(`/p/${slug}`);
+      router.push(`/p/${slug}`);
     }).catch((err) => {
       console.log(err);
     });
