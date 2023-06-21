@@ -4,9 +4,11 @@ import { Dialog, Transition } from '@headlessui/react';
 import useStaleSWR from '../utils/staleSWR';
 import Image from 'next/image';
 import moment from 'moment';
-import { DocumentIcon, HashtagIcon } from '@heroicons/react/24/outline';
+import { DocumentIcon, HashtagIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import shortToken from '@/utils/shortToken';
 import { Select, Tags } from '@/form';
+import axios from "axios";
+import ConfirmationModal from "./ConfirmationModal";
 
 type IssueModalProps = {
   issue:
@@ -17,10 +19,12 @@ type IssueModalProps = {
       })
     | null;
   onClose: () => void;
+  trigger: (e: boolean) => void;
 };
 
-export default function IssueModal({ issue, onClose }: IssueModalProps) {
+export default function IssueModal({ issue, onClose, trigger }: IssueModalProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { data: types } = useStaleSWR(`/api/types`);
   const { data: status } = useStaleSWR(`/api/status`);
   const { data: history } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
@@ -36,7 +40,21 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
     onClose();
   };
 
+  const handleCloseIssue = async () => {
+    setIsConfirmOpen(true);
+    setIsOpen(false);
+  };
+
+  const handleConfirm = async () => {
+    const res = await axios.post(`/api/issues/${issue?.id}/close`);
+    if (res.status === 200) {
+      trigger(true);
+      handleClose();
+    }
+  }
+
   return (
+    <>
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog onClose={() => handleClose()} className="relative z-50">
         <Transition.Child
@@ -62,15 +80,21 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
             leaveTo="opacity-0 scale-95"
           >
             <Dialog.Panel className="w-full max-w-5xl rounded-lg bg-white p-8">
-              <h3 className="group text-xl flex items-center gap-1">
-                <DocumentIcon className="h-4" />
-                Issue
-                <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
-                  <HashtagIcon className="h-3" />
-                  <span className="group-hover:hidden">{shortToken(issue?.token)}</span>
-                  <span className="opacity-0 group-hover:opacity-100">{issue?.token}</span>
-                </span>
-              </h3>
+              <div className="flex justify-between items-center">
+                <h3 className="group text-xl flex items-center gap-1">
+                  <DocumentIcon className="h-4" />
+                  Issue
+                  <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
+                    <HashtagIcon className="h-3" />
+                    <span className="group-hover:hidden">{shortToken(issue?.token)}</span>
+                    <span className="opacity-0 group-hover:opacity-100">{issue?.token}</span>
+                  </span>
+                </h3>
+                <button onClick={() => handleClose()} className="">
+                  <XCircleIcon className="w-7 hover:text-red-500"/>
+                </button>
+
+              </div>
               <Dialog.Title className="text-3xl border-b pb-4 group">{issue?.title}</Dialog.Title>
               <Dialog.Description className="pb-5 grid grid-cols-2 gap-4" as="div">
                 <div className="pt-4 pr-4 border-r flex flex-col">
@@ -146,8 +170,8 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
                 </div>
               </Dialog.Description>
               <div className="flex justify-end gap-2 mt-4">
-                <button onClick={() => handleClose()} className="btn">
-                  Close
+                <button onClick={() => handleCloseIssue()} className="btn btn-primary">
+                  Close Issue
                 </button>
               </div>
             </Dialog.Panel>
@@ -155,5 +179,13 @@ export default function IssueModal({ issue, onClose }: IssueModalProps) {
         </div>
       </Dialog>
     </Transition>
+    <ConfirmationModal 
+      openModal={isConfirmOpen} 
+      onClose={() => null} 
+      onConfirm={() => handleConfirm()} 
+      title="Close Issue"
+      message="Are you sure you want to close this issue?"
+      />
+    </>
   );
 }

@@ -23,6 +23,15 @@ body {
 .btn-gray:hover {
   @apply bg-gray-400 text-gray-900;
 }
+.btn-gray:disabled {
+  @apply border-gray-300 bg-gray-300 text-gray-900 cursor-not-allowed;
+}
+.btn-primary {
+  @apply border-sky-500 bg-sky-500 text-white;
+}
+.btn-primary:hover {
+  @apply bg-sky-600 text-white;
+}
 .input-label {
   @apply text-sm font-semibold;
 }

@@ -4,14 +4,10 @@ import { Fragment } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { TicketIcon } from '@heroicons/react/24/solid';
-import { TicketIcon as TicketOutlineIcon } from '@heroicons/react/24/outline';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ');
-}
+import classNames from "@/utils/classNames";
 
 export default function Navbar({ navigation }: { navigation: { name: string; href: string; current: boolean }[] }) {
   const { data: session } = useSession();

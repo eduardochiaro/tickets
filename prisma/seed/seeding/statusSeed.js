@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 const data = [
   {
     id: 1,
-    title: 'Open'
+    title: 'New'
   },
   {
     id: 2,

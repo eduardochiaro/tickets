@@ -3,13 +3,14 @@
 import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/outline';
 import moment from 'moment';
 import Image from 'next/image';
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, use } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
 import useStaleSWR from '@/utils/staleSWR';
 import shortToken from '@/utils/shortToken';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
+import classNames from "@/utils/classNames";
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -60,6 +61,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
   const [issuesset, setDataset] = useState<any>(null);
   const [activeButton, setActiveButton] = useState<string>('all');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
+  const [triggerMutate, setTriggerMutate] = useState(false);
   const [sort, setSort] = useState('latest');
 
   useEffect(() => {
@@ -67,6 +69,13 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
       setDataset([...issues]);
     }
   }, [issues]);
+
+  useEffect(() => {
+    if (triggerMutate) {
+      mutate();
+      setTriggerMutate(false);
+    }
+  }, [triggerMutate]);
 
   const onClickPending = () => {
     const pending = issues.filter((issue: any) => issue.statusId === 2);
@@ -199,7 +208,10 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                 ))}
               {issuesset &&
                 issuesset.map((issue: any) => (
-                  <tr className="h-16 group" key={issue.id}>
+                  <tr className={classNames(
+                    issue.closed ? `bg-gray-200 opacity-70 cursor-not-allowed` : `bg-white `,
+                    `h-16 group`
+                   )} key={issue.id}>
                     <td className="p-2">
                       <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
                     </td>
@@ -260,7 +272,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
-                      <button onClick={() => setCurrentIssue(issue)} className="btn btn-gray">
+                      <button disabled={issue.closed} onClick={() => setCurrentIssue(issue)} className="btn btn-gray">
                         View
                       </button>
                     </td>
@@ -270,7 +282,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
           </table>
         </div>
       </div>
-      <IssueModal issue={currentIssue} onClose={() => onModalClose()} />
+      <IssueModal issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
     </>
   );
 }
