@@ -3,8 +3,8 @@ import { redirect } from 'next/navigation';
 import prisma from '@/utils/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import ExtendedUser from "@/models/ExtendedUser";
-import { customAlphabet } from "nanoid";
+import ExtendedUser from '@/models/ExtendedUser';
+import { customAlphabet } from 'nanoid';
 
 const nanoid = customAlphabet('1234567890abcdef', 16);
 
@@ -63,7 +63,6 @@ export async function GET(
   }
 }
 
-
 export async function POST(
   request: NextRequest,
   {
@@ -84,25 +83,25 @@ export async function POST(
       title,
       type: {
         connect: {
-          id: parseInt(type)
-        }
+          id: parseInt(type),
+        },
       },
       status: {
         connect: {
           id: 1,
-        }
+        },
       },
       description,
       owner: {
         connect: {
           id: parseInt(user.id),
-        }
+        },
       },
       project: {
         connect: {
           slug,
         },
-      }
+      },
     },
   });
   if (issue) {

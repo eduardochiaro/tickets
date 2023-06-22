@@ -3,11 +3,11 @@ import type { Issue, Status, Type, User } from '@prisma/client';
 import { Input, Select, Textarea } from '@/form';
 import useStaleSWR from '@/utils/staleSWR';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
-import axios from "axios";
-import { useRouter } from 'next/navigation'
-import { NextResponse } from "next/server";
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import { NextResponse } from 'next/server';
 
-export default function CreateIssue({ slug }: { slug: string; }) {
+export default function CreateIssue({ slug }: { slug: string }) {
   const router = useRouter();
   const { data: types } = useStaleSWR(`/api/types`);
 
@@ -27,20 +27,22 @@ export default function CreateIssue({ slug }: { slug: string; }) {
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axios.post(`/api/projects/${slug}/issues`, JSON.stringify(issueForm), {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    }).then((res) => {
-      router.push(`/p/${slug}`);
-    }).catch((err) => {
-      console.log(err);
-    });
-
+    axios
+      .post(`/api/projects/${slug}/issues`, JSON.stringify(issueForm), {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then((res) => {
+        router.push(`/p/${slug}`);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
-    <form className="mt-10" method="POST" action={`/api/projects/${slug}/issues`} onSubmit={ (e) => handleSubmit(e) }>
+    <form className="mt-10" method="POST" action={`/api/projects/${slug}/issues`} onSubmit={(e) => handleSubmit(e)}>
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col col-span-2">
           <Input label="Name" name="title" id="issue-title" className="text-3xl" value={issueForm.title} required onChange={(e) => handeChanges(e)} />

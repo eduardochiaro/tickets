@@ -10,7 +10,7 @@ import useStaleSWR from '@/utils/staleSWR';
 import shortToken from '@/utils/shortToken';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
-import classNames from "@/utils/classNames";
+import classNames from '@/utils/classNames';
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -208,10 +208,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                 ))}
               {issuesset &&
                 issuesset.map((issue: any) => (
-                  <tr className={classNames(
-                    issue.closed ? `bg-gray-200 opacity-70 cursor-not-allowed` : `bg-white `,
-                    `h-16 group`
-                   )} key={issue.id}>
+                  <tr className={classNames(issue.closed ? `bg-gray-200 opacity-70 cursor-not-allowed` : `bg-white `, `h-16 group`)} key={issue.id}>
                     <td className="p-2">
                       <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
                     </td>

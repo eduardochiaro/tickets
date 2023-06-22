@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from 'next/server';
 import prisma from '@/utils/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/app/api/auth/[...nextauth]/route';
-import ExtendedUser from "@/models/ExtendedUser";
+import ExtendedUser from '@/models/ExtendedUser';
 
 export async function GET(
   request: NextRequest,

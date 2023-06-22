@@ -1,7 +1,7 @@
-"use client";
+'use client';
 
-import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useEffect, useState } from "react";
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment, useEffect, useState } from 'react';
 
 type ConfirmationModalProps = {
   openModal: boolean;
@@ -12,11 +12,10 @@ type ConfirmationModalProps = {
 };
 
 export default function ConfirmationModal({ openModal, onClose, onConfirm, title, message }: ConfirmationModalProps) {
-
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    console.log(openModal)
+    console.log(openModal);
     if (openModal) {
       setIsOpen(true);
     }
@@ -58,29 +57,19 @@ export default function ConfirmationModal({ openModal, onClose, onConfirm, title
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-
             <Dialog.Panel className="w-full max-w-5xl rounded-lg bg-white p-8">
-              <Dialog.Title
-                as="h3"
-                className="text-lg font-medium leading-6 text-gray-900"
-              >
+              <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
                 {title}
               </Dialog.Title>
               <div className="mt-2">
-                <p className="text-sm text-gray-500">
-                  {message}
-                </p>
+                <p className="text-sm text-gray-500">{message}</p>
               </div>
 
               <div className="mt-4 flext justify-between items-center">
                 <button type="button" className="btn btn-secondary" onClick={closeModal}>
                   No
                 </button>
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={confirm}
-                >
+                <button type="button" className="btn btn-primary" onClick={confirm}>
                   Confirm!
                 </button>
               </div>
@@ -89,5 +78,5 @@ export default function ConfirmationModal({ openModal, onClose, onConfirm, title
         </div>
       </Dialog>
     </Transition>
-  )
+  );
 }

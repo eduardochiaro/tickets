@@ -7,7 +7,7 @@ import { TicketIcon } from '@heroicons/react/24/solid';
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import classNames from "@/utils/classNames";
+import classNames from '@/utils/classNames';
 
 export default function Navbar({ navigation }: { navigation: { name: string; href: string; current: boolean }[] }) {
   const { data: session } = useSession();

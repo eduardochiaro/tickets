@@ -18,7 +18,7 @@ export async function POST(
     },
     where: {
       id: issueId,
-    }
+    },
   });
 
   if (issue) {
