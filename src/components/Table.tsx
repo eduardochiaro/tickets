@@ -11,6 +11,7 @@ import shortToken from '@/utils/shortToken';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import classNames from '@/utils/classNames';
+import { Issue } from "@prisma/client";
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -109,6 +110,11 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
   const onModalClose = () => {
     setCurrentIssue(null);
   };
+
+  const onClickOpenIssue = (issue: Issue) => {
+    setCurrentIssue(null);
+    setCurrentIssue(issue);
+  }
 
   const getSort = (sort: string) => {
     return sortOptions.filter((option) => option.id === sort)[0].name;
@@ -269,7 +275,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
-                      <button onClick={() => setCurrentIssue(issue)} className="btn btn-gray">
+                      <button onClick={() => onClickOpenIssue(issue)} className="btn btn-gray">
                         View
                       </button>
                     </td>

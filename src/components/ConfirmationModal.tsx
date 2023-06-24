@@ -15,7 +15,6 @@ export default function ConfirmationModal({ openModal, onClose, onConfirm, title
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    console.log(openModal);
     if (openModal) {
       setIsOpen(true);
     }

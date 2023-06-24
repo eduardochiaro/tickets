@@ -31,8 +31,11 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
 
   useEffect(() => {
     if (issue) {
+      setIsConfirmOpen(false);
       mutateHistory();
       setIsOpen(true);
+    } else {
+      setIsOpen(false);
     }
   }, [issue]);
 
@@ -40,6 +43,11 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
     setIsOpen(false);
     onClose();
   };
+
+  const handleReopen = () => {
+    setIsConfirmOpen(false);
+    setIsOpen(true);
+  }
 
   const handleCloseIssue = async () => {
     setIsConfirmOpen(true);
@@ -185,7 +193,7 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
       </Transition>
       <ConfirmationModal
         openModal={isConfirmOpen}
-        onClose={() => null}
+        onClose={() => handleReopen()}
         onConfirm={() => handleConfirm()}
         title="Close Issue"
         message="Are you sure you want to close this issue?"
