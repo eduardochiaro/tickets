@@ -27,10 +27,11 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const { data: types } = useStaleSWR(`/api/types`);
   const { data: status } = useStaleSWR(`/api/status`);
-  const { data: history } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
+  const { data: history, mutate: mutateHistory } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
 
   useEffect(() => {
     if (issue) {
+      mutateHistory();
       setIsOpen(true);
     }
   }, [issue]);
@@ -107,8 +108,12 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                       {history?.length > 0 && (
                         <ul className="space-y-2 p-2 overflow-y-auto max-h-60">
                           {history?.map((row: IssueHistory) => (
-                            <li key={row.id} className="text-xs p-2 rounded bg-gray-100">
-                              [{moment(row.createdAt).format('MM/DD/YY h:mm a')}] {row.message}
+                            <li key={row.id} className="text-xs p-2 rounded bg-gray-100 flex items-center gap-2">
+                              <span className="flex flex-col text-right border-r pr-2 border-gray-600 font-bold">
+                                <span>{moment(row.createdAt).format('MM/DD/YY')}</span>
+                                <span>{moment(row.createdAt).format('h:mma')}</span>
+                              </span>
+                              <span>{row.message}</span>
                             </li>
                           ))}
                         </ul>
@@ -169,7 +174,7 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                   </div>
                 </Dialog.Description>
                 <div className="flex justify-end gap-2 mt-4">
-                  <button onClick={() => handleCloseIssue()} className="btn btn-primary">
+                  <button disabled={issue?.closed} onClick={() => handleCloseIssue()} className="btn btn-primary">
                     Close Issue
                   </button>
                 </div>

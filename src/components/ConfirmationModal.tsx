@@ -57,15 +57,15 @@ export default function ConfirmationModal({ openModal, onClose, onConfirm, title
             leaveFrom="opacity-100 scale-100"
             leaveTo="opacity-0 scale-95"
           >
-            <Dialog.Panel className="w-full max-w-5xl rounded-lg bg-white p-8">
-              <Dialog.Title as="h3" className="text-lg font-medium leading-6 text-gray-900">
+            <Dialog.Panel className="w-full max-w-lg rounded-lg bg-white p-8">
+              <Dialog.Title as="h3" className="text-2xl font-medium leading-6 text-gray-900">
                 {title}
               </Dialog.Title>
               <div className="mt-2">
                 <p className="text-sm text-gray-500">{message}</p>
               </div>
 
-              <div className="mt-4 flext justify-between items-center">
+              <div className="mt-10 flex justify-between items-center">
                 <button type="button" className="btn btn-secondary" onClick={closeModal}>
                   No
                 </button>

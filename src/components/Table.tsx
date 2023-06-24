@@ -208,7 +208,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                 ))}
               {issuesset &&
                 issuesset.map((issue: any) => (
-                  <tr className={classNames(issue.closed ? `bg-gray-200 opacity-70 cursor-not-allowed` : `bg-white `, `h-16 group`)} key={issue.id}>
+                  <tr className={classNames(issue.closed ? `bg-gray-200 opacity-70` : `bg-white `, `h-16 group`)} key={issue.id}>
                     <td className="p-2">
                       <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
                     </td>
@@ -269,7 +269,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
-                      <button disabled={issue.closed} onClick={() => setCurrentIssue(issue)} className="btn btn-gray">
+                      <button onClick={() => setCurrentIssue(issue)} className="btn btn-gray">
                         View
                       </button>
                     </td>
