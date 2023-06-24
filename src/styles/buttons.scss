@@ -1,0 +1,31 @@
+
+.btn {
+  @apply font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-sky-300;
+  &:hover {
+    @apply bg-sky-300 text-white;
+  }
+  &:disabled {
+    @apply border-gray-300 bg-gray-300 text-gray-900 cursor-not-allowed;
+  }
+  &.active {
+    @apply border-sky-500 bg-sky-500 text-white;
+  }
+  &.btn-gray {
+    @apply border-gray-300 bg-gray-300 text-gray-900;
+    &:hover {
+      @apply bg-gray-400 text-gray-900;
+    }
+  }
+  &.btn-primary {
+    @apply border-sky-500 bg-sky-500 text-white;
+    &:hover {
+      @apply bg-sky-600 text-white;
+    }
+  }
+  &.btn-secondary {
+    @apply border-gray-600 bg-gray-600 text-white;
+    &:hover {
+      @apply bg-gray-700 text-white;
+    }
+  }
+}

@@ -42,7 +42,11 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
   const handleClose = () => {
     if (!isConfirmOpen) {
       setIsOpen(false);
-      onClose();
+
+      const timer = setTimeout(() => {
+        onClose();
+      }, 300);
+      return () => clearTimeout(timer);
     }
   };
 
