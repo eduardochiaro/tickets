@@ -40,18 +40,20 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
   }, [issue]);
 
   const handleClose = () => {
-    setIsOpen(false);
-    onClose();
+    if (!isConfirmOpen) {
+      setIsOpen(false);
+      onClose();
+    }
   };
 
   const handleReopen = () => {
     setIsConfirmOpen(false);
-    setIsOpen(true);
+    //setIsOpen(true);
   }
 
   const handleCloseIssue = async () => {
     setIsConfirmOpen(true);
-    setIsOpen(false);
+    //setIsOpen(false);
   };
 
   const handleConfirm = async () => {
@@ -65,7 +67,7 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
   return (
     <>
       <Transition appear show={isOpen} as={Fragment}>
-        <Dialog onClose={() => handleClose()} className="relative z-50">
+        <Dialog onClose={() => handleClose()} className="relative z-20">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
