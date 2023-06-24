@@ -1,6 +1,6 @@
 //profile page
 
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import authOptions from '@/config/nextAuth';
 import { getServerSession } from 'next-auth';
 import Image from 'next/image';
 

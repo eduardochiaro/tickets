@@ -1,5 +1,5 @@
 import Navbar from '@/components/Navbar';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import authOptions from '@/config/nextAuth';
 import { getServerSession } from 'next-auth';
 
 export default async function Project({ children }: { children: React.ReactNode }) {

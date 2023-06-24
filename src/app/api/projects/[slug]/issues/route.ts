@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
-import { redirect } from 'next/navigation';
 import prisma from '@/utils/prisma';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import authOptions from '@/config/nextAuth';
 import ExtendedUser from '@/models/ExtendedUser';
 import { customAlphabet } from 'nanoid';
 

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Navbar from '@/components/Navbar';
 import prisma from '@/utils/prisma';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import authOptions from '@/config/nextAuth';
 import { getServerSession } from 'next-auth';
 
 export default async function Project({ params, children }: { params: { slug: string }; children: React.ReactNode }) {
