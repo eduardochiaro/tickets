@@ -60,14 +60,14 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesset, setDataset] = useState<any>(null);
-  const [activeButton, setActiveButton] = useState<string>('all');
+  const [activeButton, setActiveButton] = useState<string>('open');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
   const [triggerMutate, setTriggerMutate] = useState(false);
   const [sort, setSort] = useState('latest');
 
   useEffect(() => {
     if (issues) {
-      setDataset([...issues]);
+      switchDataset(activeButton);
     }
   }, [issues]);
 
@@ -78,22 +78,30 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
     }
   }, [triggerMutate]);
 
-  const onClickPending = () => {
-    const pending = issues.filter((issue: any) => issue.statusId === 2);
-    setDataset([...pending]);
-    setActiveButton('pending');
-  };
-
-  const onClickAll = () => {
-    setDataset([...issues]);
-    setActiveButton('all');
-  };
-
-  const onClickDone = () => {
-    const done = issues.filter((issue: any) => issue.closed === true);
-    setDataset([...done]);
-    setActiveButton('done');
-  };
+  const switchDataset = (type: string) => {
+    switch (type) {
+      default:
+      case 'open':
+        const open = issues.filter((issue: any) => !issue.closed);
+        setDataset([...open]);
+        setActiveButton('open');
+        break;
+      case 'pending':
+        const pending = issues.filter((issue: any) => issue.statusId === 2);
+        setDataset([...pending]);
+        setActiveButton('pending');
+        break;
+      case 'all':
+        setDataset([...issues]);
+        setActiveButton('all');
+        break;
+      case 'closed':
+        const closed = issues.filter((issue: any) => !!issue.closed);
+        setDataset([...closed]);
+        setActiveButton('closed');
+        break;
+    }
+  }
 
   const sortByDate = (order: string) => {
     setSort(order);
@@ -168,14 +176,17 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
       <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10 rounded-lg">
         <div className="sm:flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-8 text-sm">
-            <button type="button" onClick={() => onClickAll()} className={`${activeButton === 'all' && 'active'} btn`}>
+            <button type="button" onClick={() => switchDataset('open')} className={`${activeButton === 'open' && 'active'} btn`}>
+              Open
+            </button>
+            <button type="button" onClick={() => switchDataset('all')} className={`${activeButton === 'all' && 'active'} btn`}>
               All
             </button>
-            <button type="button" onClick={() => onClickDone()} className={`${activeButton === 'done' && 'active'} btn`}>
-              Done
-            </button>
-            <button type="button" onClick={() => onClickPending()} className={`${activeButton === 'pending' && 'active'} btn`}>
+            <button type="button" onClick={() => switchDataset('pending')} className={`${activeButton === 'pending' && 'active'} btn`}>
               Pending
+            </button>
+            <button type="button" onClick={() => switchDataset('closed')} className={`${activeButton === 'closed' && 'active'} btn`}>
+              Closed
             </button>
           </div>
         </div>

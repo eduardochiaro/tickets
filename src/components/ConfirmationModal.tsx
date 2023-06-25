@@ -21,13 +21,13 @@ export default function ConfirmationModal({ openModal, onClose, onConfirm, title
   }, [openModal]);
 
   const closeModal = () => {
-    onClose();
     setIsOpen(false);
+    onClose();
   };
 
   const confirm = () => {
-    onConfirm();
     setIsOpen(false);
+    onConfirm();
   };
 
   return (

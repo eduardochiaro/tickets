@@ -39,8 +39,8 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
     }
   }, [issue]);
 
-  const handleClose = () => {
-    if (!isConfirmOpen) {
+  const handleClose = (forced = false) => {
+    if (!isConfirmOpen || forced) {
       setIsOpen(false);
 
       const timer = setTimeout(() => {
@@ -52,19 +52,18 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
 
   const handleReopen = () => {
     setIsConfirmOpen(false);
-    //setIsOpen(true);
   }
 
   const handleCloseIssue = async () => {
     setIsConfirmOpen(true);
-    //setIsOpen(false);
   };
 
   const handleConfirm = async () => {
     const res = await axios.post(`/api/issues/${issue?.id}/close`);
     if (res.status === 200) {
+      setIsConfirmOpen(false);
+      handleClose(true);
       trigger(true);
-      handleClose();
     }
   };
 
