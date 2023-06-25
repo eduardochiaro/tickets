@@ -3,7 +3,6 @@
 
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["clientExtensions"]
 }
 
 datasource db {
@@ -21,6 +20,7 @@ model Project {
   published     Boolean  @default(false)
   createdAt     DateTime @default(now()) @db.Timestamp(6)
   issues        Issue[]
+  users         ProjectUser[]
 }
 
 model Issue {
@@ -81,6 +81,40 @@ model Type {
   issues        Issue[]
 }
 
+model ProjectUser {
+  project       Project  @relation(fields: [projectId], references: [id])
+  projectId     Int
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+  role          Role     @relation(fields: [roleId], references: [id])
+  roleId        Int
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime? @db.Timestamp(6)
+
+  @@id([projectId, userId])
+}
+
+model Role {
+  id            Int      @id @default(autoincrement())
+  title         String   @db.VarChar(255)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  projects      ProjectUser[]
+}
+
+model User {
+  id              Int       @id @default(autoincrement())
+  name            String?   @db.VarChar(255)
+  email           String?   @unique @db.VarChar(255)
+  emailVerified   DateTime?
+  image           String?
+  accounts        Account[]
+  sessions        Session[]
+  IssueOwned      Issue[]
+  issuesAssigned  UsersOnIssues[]
+  history         IssueHistory[]
+  projects        ProjectUser[]
+}
+
 //account auth schemas
 
 model Account {
@@ -116,17 +150,4 @@ model VerificationToken {
   expires         DateTime
 
   @@unique([identifier, token])
-}
-
-model User {
-  id              Int       @id @default(autoincrement())
-  name            String?   @db.VarChar(255)
-  email           String?   @unique @db.VarChar(255)
-  emailVerified   DateTime?
-  image           String?
-  accounts        Account[]
-  sessions        Session[]
-  IssueOwned      Issue[]
-  issuesAssigned  UsersOnIssues[]
-  history         IssueHistory[]
 }

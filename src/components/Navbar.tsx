@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { TicketIcon } from '@heroicons/react/24/solid';
@@ -8,9 +8,22 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from '@/utils/classNames';
+import { usePathname } from "next/navigation";
 
 export default function Navbar({ navigation }: { navigation: { name: string; href: string; current: boolean }[] }) {
   const { data: session } = useSession();
+
+  const [ navigationData, setNavigationData ] = useState(navigation);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setNavigationData(navigation.map((nav) => {
+      return {
+        ...nav,
+        current: nav.href === pathname
+      }
+    }));
+  }, [pathname]);
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -35,7 +48,7 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
                 </div>
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
-                    {navigation.map((item) => (
+                    {navigationData.map((item) => (
                       <a
                         key={item.name}
                         href={item.href}

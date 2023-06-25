@@ -12,8 +12,9 @@ export default async function Project({ params, children }: { params: { slug: st
   const project = await getData(params.slug);
 
   const navigation = [
-    { name: project.title, href: `/p/${project.slug}`, current: true },
+    { name: project.title, href: `/p/${project.slug}`, current: false },
     { name: 'My Issues', href: `/p/${project.slug}/me`, current: false },
+    { name: 'Team', href: `/p/${project.slug}/team`, current: false },
   ];
 
   return (

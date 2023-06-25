@@ -11,6 +11,7 @@ export type FormInputProps = {
   label: string;
   value: any[];
   type?: string;
+  indexFilter?: any;
   className?: string;
   invalid?: boolean;
   handleChange?: any;
@@ -32,6 +33,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
       placeholder = '',
       invalid = false,
       api = '/api/users',
+      indexFilter = null,
       updateItem,
       className,
       addNew = false,
@@ -51,7 +53,9 @@ const Tags = forwardRef<Ref, FormInputProps>(
           const res = await fetch(`${api}?text=${searchTerm}`);
           const elementSearch = await res.json();
           const currentElements = pluck(value, 'id');
-          const elements = elementSearch.length > 0 ? elementSearch.filter((x: any) => !currentElements.includes(x.id)) : [];
+          const elementSearchFiltered = (indexFilter) ? elementSearch.map((element: any) => element[indexFilter]) : elementSearch;
+
+          const elements = elementSearchFiltered.length > 0 ? elementSearchFiltered.filter((x: any) => !currentElements.includes(x.id)) : [];
           setOpenMenu(true);
           if (elements.length > 0) {
             setSearchResults(elements);
@@ -144,7 +148,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
                 ))}
                 {searchResults.length == 0 && (
                   <>
-                    <div className="px-1 py-5">
+                    <div className="px-1 py-1">
                       <p className="text-center opacity-70">No results found</p>
                     </div>
                     {addNew && (

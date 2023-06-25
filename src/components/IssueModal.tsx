@@ -14,6 +14,7 @@ import ExtendedUser from "@/models/ExtendedUser";
 
 
 type IssueModalProps = {
+  slug: string;
   issue:
     | (Issue & {
         assignees: User[];
@@ -25,7 +26,7 @@ type IssueModalProps = {
   trigger: (e: boolean) => void;
 };
 
-export default function IssueModal({ issue, onClose, trigger }: IssueModalProps) {
+export default function IssueModal({ slug, issue, onClose, trigger }: IssueModalProps) {
   const [issueData, setIssueData] = useState<IssueModalProps["issue"] | null>(null);
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -209,6 +210,8 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                           label="Assignees"
                           name="assignees"
                           placeholder="add new person..."
+                          api={`/api/projects/${slug}/team`}
+                          indexFilter="user"
                           value={issueData?.assignees?.map((a: any) => a.user) as []}
                           updateItem={() => null}
                         />

@@ -296,7 +296,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
           </table>
         </div>
       </div>
-      <IssueModal issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
+      <IssueModal slug={slug} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
     </>
   );
 }
