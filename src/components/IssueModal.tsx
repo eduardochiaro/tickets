@@ -34,7 +34,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
   const [imAlreadyAssigned, setImAlreadyAssigned] = useState(false);
   const { data: types } = useStaleSWR(`/api/types`);
   const { data: status } = useStaleSWR(`/api/status`);
-  const { data: history, mutate: mutateHistory } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
+  const { data: history, mutate: mutateHistory, isLoading: isLoadingHistory } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
 
   const user = session?.user as ExtendedUser;
 
@@ -53,7 +53,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
 
   useEffect(() => {
     if (issueData) {
-      if (issueData.assignees.filter((assignee) => assignee.id === parseInt(user.id))) {
+      if (issueData.assignees.filter((assignee: any) => assignee.user.id === parseInt(user.id)).length > 0) {
         setImAlreadyAssigned(true);
       }
     }
@@ -148,7 +148,8 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                     </div>
                     <div className="col-span-2">
                       <h3 className="text-xl font-semibold mt-4 mb-2">History</h3>
-                      {history?.length === 0 && <p className="text-sm text-center opacity-75">No history yet.</p>}
+                      {isLoadingHistory && <p className="text-sm text-center opacity-75">Loading...</p>}
+                      {history?.length === 0 && !isLoadingHistory && <p className="text-sm text-center opacity-75">No history yet.</p>}
                       {history?.length > 0 && (
                         <ul className="space-y-2 p-2 overflow-y-auto max-h-60">
                           {history?.map((row: IssueHistory) => (
@@ -220,7 +221,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                   </div>
                 </Dialog.Description>
                 <div className="flex justify-end gap-6 mt-4">
-                  <button disabled={imAlreadyAssigned} onClick={() => handleAssingToMe()} className="btn btn-primary">
+                  <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-primary">
                     Assign to me
                   </button>
                   <button disabled={issueData?.closed} onClick={() => handleCloseIssue()} className="btn btn-action">
