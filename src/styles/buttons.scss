@@ -4,9 +4,6 @@
   &:hover {
     @apply bg-sky-300 text-white;
   }
-  &:disabled {
-    @apply border-gray-300 bg-gray-300 text-gray-900 cursor-not-allowed;
-  }
   &.active {
     @apply border-sky-500 bg-sky-500 text-white;
   }
@@ -26,6 +23,18 @@
     @apply border-gray-600 bg-gray-600 text-white;
     &:hover {
       @apply bg-gray-700 text-white;
+    }
+  }
+  &.btn-action {
+    @apply border-red-600 bg-red-600 text-white;
+    &:hover {
+      @apply bg-red-700 text-white;
+    }
+  }
+  &:disabled {
+    @apply border-gray-300 bg-gray-300 text-gray-900 cursor-not-allowed;
+    &:hover {
+      @apply bg-gray-300 text-gray-900;
     }
   }
 }

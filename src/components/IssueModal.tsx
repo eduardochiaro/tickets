@@ -1,5 +1,5 @@
 import { Issue, Status, Type, User, IssueHistory } from '@prisma/client';
-import { useEffect, useState, Fragment } from 'react';
+import { useEffect, useState, Fragment, use } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import useStaleSWR from '../utils/staleSWR';
 import Image from 'next/image';
@@ -9,6 +9,9 @@ import shortToken from '@/utils/shortToken';
 import { Select, Tags } from '@/form';
 import axios from 'axios';
 import ConfirmationModal from './ConfirmationModal';
+import { useSession } from "next-auth/react";
+import ExtendedUser from "@/models/ExtendedUser";
+
 
 type IssueModalProps = {
   issue:
@@ -23,21 +26,37 @@ type IssueModalProps = {
 };
 
 export default function IssueModal({ issue, onClose, trigger }: IssueModalProps) {
+  const [issueData, setIssueData] = useState<IssueModalProps["issue"] | null>(null);
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [imAlreadyAssigned, setImAlreadyAssigned] = useState(false);
   const { data: types } = useStaleSWR(`/api/types`);
   const { data: status } = useStaleSWR(`/api/status`);
   const { data: history, mutate: mutateHistory } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
 
+  const user = session?.user as ExtendedUser;
+
   useEffect(() => {
+    setImAlreadyAssigned(false);
     if (issue) {
+      setIssueData(issue);
       setIsConfirmOpen(false);
       mutateHistory();
       setIsOpen(true);
     } else {
       setIsOpen(false);
+      setIssueData(null);
     }
   }, [issue]);
+
+  useEffect(() => {
+    if (issueData) {
+      if (issueData.assignees.filter((assignee) => assignee.id === parseInt(user.id))) {
+        setImAlreadyAssigned(true);
+      }
+    }
+  }, [issueData]);
 
   const handleClose = (forced = false) => {
     if (!isConfirmOpen || forced) {
@@ -59,11 +78,22 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
   };
 
   const handleConfirm = async () => {
-    const res = await axios.post(`/api/issues/${issue?.id}/close`);
+    const res = await axios.delete(`/api/issues/${issueData?.id}`);
     if (res.status === 200) {
       setIsConfirmOpen(false);
       handleClose(true);
       trigger(true);
+    }
+  };
+
+  const handleAssingToMe = async () => {
+    const res = await axios.put(`/api/issues/${issueData?.id}`, {
+      assigneeId: [user.id],
+    });
+    if (res.status === 200) {
+      mutateHistory();
+      trigger(true);
+      setIssueData(res.data);
     }
   };
 
@@ -100,20 +130,20 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                     Issue
                     <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
                       <HashtagIcon className="h-3" />
-                      <span className="group-hover:hidden">{shortToken(issue?.token)}</span>
-                      <span className="opacity-0 group-hover:opacity-100">{issue?.token}</span>
+                      <span className="group-hover:hidden">{shortToken(issueData?.token)}</span>
+                      <span className="opacity-0 group-hover:opacity-100">{issueData?.token}</span>
                     </span>
                   </h3>
                   <button onClick={() => handleClose()} className="">
                     <XCircleIcon className="w-7 hover:text-red-500" />
                   </button>
                 </div>
-                <Dialog.Title className="text-3xl border-b pb-4 group">{issue?.title}</Dialog.Title>
+                <Dialog.Title className="text-3xl border-b pb-4 group">{issueData?.title}</Dialog.Title>
                 <Dialog.Description className="pb-5 grid grid-cols-2 gap-4" as="div">
                   <div className="pt-4 pr-4 border-r flex flex-col">
                     <div className="col-span-2 p-4 bg-gray-200 text-sm m-1 ring-offset-2 ring-2 ring-gray-100 rounded ">
                       <h4 className="text-base font-semibold pb-2">Description</h4>
-                      {issue?.description}
+                      {issueData?.description}
                     </div>
                     <div className="col-span-2">
                       <h3 className="text-xl font-semibold mt-4 mb-2">History</h3>
@@ -136,28 +166,28 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                   <div className="pt-4 space-y-3">
                     <div>
                       <h3 className="text-xl font-semibold mb-2">Owner</h3>
-                      {issue?.owner === null && <p className="text-sm text-center opacity-75">No owner yet.</p>}
-                      {issue && issue?.owner !== null && (
+                      {issueData?.owner === null && <p className="text-sm text-center opacity-75">No owner yet.</p>}
+                      {issue && issueData?.owner !== null && (
                         <div className="flex items-center gap-2 group">
                           <Image
                             className="h-6 w-6 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
-                            src={issue?.owner?.image || ''}
-                            alt={issue?.owner?.name || ''}
-                            title={issue?.owner?.name || ''}
+                            src={issueData?.owner?.image || ''}
+                            alt={issueData?.owner?.name || ''}
+                            title={issueData?.owner?.name || ''}
                             width={100}
                             height={100}
                           />
-                          {issue?.owner?.name}
+                          {issueData?.owner?.name}
                         </div>
                       )}
                       <div className="flex items-center gap-2 mt-2 ">
-                        <p className="text-sm">created: {moment(issue?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
-                        <p className="text-xs">({moment(issue?.createdAt).fromNow()})</p>
+                        <p className="text-sm">created: {moment(issueData?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
+                        <p className="text-xs">({moment(issueData?.createdAt).fromNow()})</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="flex flex-col">
-                        <Select label="Status" name="status" disabled={true} value={issue?.statusId as unknown as string}>
+                        <Select label="Status" name="status" disabled={true} value={issueData?.statusId as unknown as string}>
                           {status?.map((s: Status) => (
                             <option key={s.id} value={s.id}>
                               {s.title}
@@ -166,7 +196,7 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                         </Select>
                       </div>
                       <div className="flex flex-col">
-                        <Select label="Type" name="type" disabled={true} value={issue?.typeId as unknown as string}>
+                        <Select label="Type" name="type" disabled={true} value={issueData?.typeId as unknown as string}>
                           {types?.map((s: Type) => (
                             <option key={s.id} value={s.id}>
                               {s.title}
@@ -179,15 +209,18 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
                           label="Assignees"
                           name="assignees"
                           placeholder="add new person..."
-                          value={issue?.assignees?.map((a: any) => a.user) as []}
+                          value={issueData?.assignees?.map((a: any) => a.user) as []}
                           updateItem={() => null}
                         />
                       </div>
                     </div>
                   </div>
                 </Dialog.Description>
-                <div className="flex justify-end gap-2 mt-4">
-                  <button disabled={issue?.closed} onClick={() => handleCloseIssue()} className="btn btn-primary">
+                <div className="flex justify-end gap-6 mt-4">
+                  <button disabled={imAlreadyAssigned} onClick={() => handleAssingToMe()} className="btn btn-primary">
+                    Assign to me
+                  </button>
+                  <button disabled={issueData?.closed} onClick={() => handleCloseIssue()} className="btn btn-action">
                     Close Issue
                   </button>
                 </div>
@@ -201,7 +234,7 @@ export default function IssueModal({ issue, onClose, trigger }: IssueModalProps)
         onClose={() => handleReopen()}
         onConfirm={() => handleConfirm()}
         title="Close Issue"
-        message="Are you sure you want to close this issue?"
+        message="Are you sure you want to close this issueData?"
       />
     </>
   );
