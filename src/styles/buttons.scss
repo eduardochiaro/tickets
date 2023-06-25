@@ -4,8 +4,8 @@
   &:hover {
     @apply bg-sky-300 text-white;
   }
-  &.active {
-    @apply border-sky-500 bg-sky-500 text-white;
+  &.btn-small {
+    @apply py-1 px-2;
   }
   &.btn-gray {
     @apply border-gray-300 bg-gray-300 text-gray-900;
@@ -31,10 +31,16 @@
       @apply bg-red-700 text-white;
     }
   }
-  &:disabled {
-    @apply border-gray-300 bg-gray-300 text-gray-900 cursor-not-allowed;
+  &.active {
+    @apply border-sky-500 bg-sky-500 text-white;
     &:hover {
-      @apply bg-gray-300 text-gray-900;
+      @apply bg-sky-600 text-white;
+    }
+  }
+  &:disabled {
+    @apply border-gray-300 bg-gray-300 text-gray-400 cursor-not-allowed;
+    &:hover {
+      @apply bg-gray-300 text-gray-400;
     }
   }
 }

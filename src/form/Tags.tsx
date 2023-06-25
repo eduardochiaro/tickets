@@ -53,7 +53,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
           const res = await fetch(`${api}?text=${searchTerm}`);
           const elementSearch = await res.json();
           const currentElements = pluck(value, 'id');
-          const elementSearchFiltered = (indexFilter) ? elementSearch.map((element: any) => element[indexFilter]) : elementSearch;
+          const elementSearchFiltered = indexFilter ? elementSearch.map((element: any) => element[indexFilter]) : elementSearch;
 
           const elements = elementSearchFiltered.length > 0 ? elementSearchFiltered.filter((x: any) => !currentElements.includes(x.id)) : [];
           setOpenMenu(true);
@@ -63,7 +63,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
         }
       }, 500);
       return () => clearTimeout(delayDebounceFn);
-    }, [searchTerm, value]);
+    }, [searchTerm, value, api, indexFilter]);
 
     const addTag = (element: any) => {
       resetSearch();

@@ -1,4 +1,4 @@
-import { getToken } from "next-auth/jwt";
+import { getToken } from 'next-auth/jwt';
 import { NextRequestWithAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 
@@ -9,18 +9,15 @@ export default async function middleware(request: NextRequestWithAuth) {
   const { pathname, search, origin, basePath } = request.nextUrl;
   const signInPage = '/auth/signin';
   const errorPage = '/api/auth/signin';
-  const publicPaths = ["/_next", "/favicon.ico", "/api/auth"];
+  const publicPaths = ['/_next', '/favicon.ico', '/api/auth'];
 
-  if (
-    [signInPage, errorPage].includes(pathname) ||
-    publicPaths.some((p) => pathname.startsWith(p))
-  ) {
+  if ([signInPage, errorPage].includes(pathname) || publicPaths.some((p) => pathname.startsWith(p))) {
     return response;
   }
 
-  const token = await getToken({ 
-    req: request, 
-    secret: process.env.NEXTAUTH_SECRET 
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
   });
 
   if (request.nextUrl.pathname.startsWith('/api')) {
@@ -37,12 +34,9 @@ export default async function middleware(request: NextRequestWithAuth) {
   } else {
     if (!request.nextUrl.pathname.startsWith('/auth')) {
       if (!token) {
-        const signInUrl = new URL(`${basePath}${signInPage}`, origin)
-        signInUrl.searchParams.append(
-          "callbackUrl",
-          `${basePath}${pathname}${search}`
-        )
-        return NextResponse.redirect(signInUrl)
+        const signInUrl = new URL(`${basePath}${signInPage}`, origin);
+        signInUrl.searchParams.append('callbackUrl', `${basePath}${pathname}${search}`);
+        return NextResponse.redirect(signInUrl);
       }
     }
   }

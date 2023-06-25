@@ -10,24 +10,26 @@ export async function GET(
   },
 ) {
   const slug = params.slug;
-  
+
   const { searchParams } = new URL(request.url);
   const text = searchParams.get('text') as string;
 
-  const find = text ? {
-    user: {
-      name : {
-        contains: text,
+  const find = text
+    ? {
+        user: {
+          name: {
+            contains: text,
+          },
+        },
       }
-    }
-  } : {};
+    : {};
 
   const projectUsers = await prisma.projectUser.findMany({
     where: {
       project: {
         slug,
       },
-      ...find
+      ...find,
     },
     orderBy: {
       roleId: 'asc',

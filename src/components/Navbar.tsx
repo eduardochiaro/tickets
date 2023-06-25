@@ -8,22 +8,24 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from '@/utils/classNames';
-import { usePathname } from "next/navigation";
+import { usePathname } from 'next/navigation';
 
 export default function Navbar({ navigation }: { navigation: { name: string; href: string; current: boolean }[] }) {
   const { data: session } = useSession();
 
-  const [ navigationData, setNavigationData ] = useState(navigation);
+  const [navigationData, setNavigationData] = useState(navigation);
   const pathname = usePathname();
 
   useEffect(() => {
-    setNavigationData(navigation.map((nav) => {
-      return {
-        ...nav,
-        current: nav.href === pathname
-      }
-    }));
-  }, [pathname]);
+    setNavigationData(
+      navigation.map((nav) => {
+        return {
+          ...nav,
+          current: nav.href === pathname,
+        };
+      }),
+    );
+  }, [navigation, pathname]);
 
   return (
     <Disclosure as="nav" className="bg-gray-800">
@@ -49,17 +51,18 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
                 <div className="hidden sm:ml-6 sm:block">
                   <div className="flex space-x-4">
                     {navigationData.map((item) => (
-                      <a
+                      <Link
                         key={item.name}
                         href={item.href}
                         className={classNames(
                           item.current ? 'bg-gray-900 text-white' : 'text-gray-300 hover:bg-gray-700 hover:text-white',
                           'rounded-md px-3 py-2 text-sm font-medium',
                         )}
+                        prefetch={false}
                         aria-current={item.current ? 'page' : undefined}
                       >
                         {item.name}
-                      </a>
+                      </Link>
                     ))}
                   </div>
                 </div>
@@ -102,16 +105,16 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
                     <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                       <Menu.Item>
                         {({ active }) => (
-                          <Link href="/s/profile" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+                          <Link href="/s/profile" prefetch={false} className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                             Your Profile
                           </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>
                         {({ active }) => (
-                          <a href="#" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
+                          <Link href="#" className={classNames(active ? 'bg-gray-100' : '', 'block px-4 py-2 text-sm text-gray-700')}>
                             Settings
-                          </a>
+                          </Link>
                         )}
                       </Menu.Item>
                       <Menu.Item>

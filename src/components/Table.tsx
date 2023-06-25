@@ -11,7 +11,18 @@ import shortToken from '@/utils/shortToken';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import classNames from '@/utils/classNames';
-import { Issue } from "@prisma/client";
+import { Issue } from '@prisma/client';
+import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/solid";
+
+const paginateIssues = (issues: any, page_size: number, page_number: number) => {
+  return issues.slice((page_number - 1) * page_size, page_number * page_size);
+}
+
+const getPagesCount = (issues: any, page_size: number) => {
+  return Math.ceil(issues.length / page_size);
+}
+
+const page_size = 5;
 
 function compare(key: any, order = 'asc') {
   return function innerSort(a: { [x: string]: any }, b: { [x: string]: any }) {
@@ -59,59 +70,64 @@ const sortOptions = [
 export default function Table({ slug, type }: { slug: string; type: string }) {
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
-  const [issuesset, setDataset] = useState<any>(null);
+  const [issuesSet, setIssuesSet] = useState<any>(null);
   const [activeButton, setActiveButton] = useState<string>('open');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
   const [triggerMutate, setTriggerMutate] = useState(false);
+  const [page, setPage] = useState(1);
   const [sort, setSort] = useState('latest');
+  const [pagesCount, setPagesCount] = useState(0);
+
+  useEffect(() => {
+    if (issuesSet) {
+      const pages = Math.ceil(issuesSet.length / page_size);
+      setPagesCount(pages);
+    }
+  }, [issuesSet, page_size]);
+
 
   useEffect(() => {
     if (issues) {
-      switchDataset(activeButton);
+      switch (activeButton) {
+        default:
+        case 'open':
+          const open = issues.filter((issue: any) => !issue.closed);
+          setIssuesSet([...open]);
+          break;
+        case 'pending':
+          const pending = issues.filter((issue: any) => issue.statusId === 2);
+          setIssuesSet([...pending]);
+          break;
+        case 'all':
+          setIssuesSet([...issues]);
+          break;
+        case 'closed':
+          const closed = issues.filter((issue: any) => !!issue.closed);
+          setIssuesSet([...closed]);
+          break;
+        case 'unassigned':
+          const unassigned = issues.filter((issue: any) => issue.assignees.length === 0 && !issue.closed);
+          setIssuesSet([...unassigned]);
+      }
     }
-  }, [issues]);
+  }, [issues, activeButton]);
 
   useEffect(() => {
     if (triggerMutate) {
       mutate();
       setTriggerMutate(false);
     }
-  }, [triggerMutate]);
-
-  const switchDataset = (type: string) => {
-    switch (type) {
-      default:
-      case 'open':
-        const open = issues.filter((issue: any) => !issue.closed);
-        setDataset([...open]);
-        setActiveButton('open');
-        break;
-      case 'pending':
-        const pending = issues.filter((issue: any) => issue.statusId === 2);
-        setDataset([...pending]);
-        setActiveButton('pending');
-        break;
-      case 'all':
-        setDataset([...issues]);
-        setActiveButton('all');
-        break;
-      case 'closed':
-        const closed = issues.filter((issue: any) => !!issue.closed);
-        setDataset([...closed]);
-        setActiveButton('closed');
-        break;
-    }
-  }
+  }, [triggerMutate, mutate]);
 
   const sortByDate = (order: string) => {
     setSort(order);
-    const filted = activeButton === 'all' ? issues : issuesset;
+    const filted = activeButton === 'all' ? issues : issuesSet;
     if (order === 'latest') {
       const sorted = filted.sort(compare('createdAt', 'desc'));
-      setDataset([...sorted]);
+      setIssuesSet([...sorted]);
     } else {
       const sorted = filted.sort(compare('createdAt', 'asc'));
-      setDataset([...sorted]);
+      setIssuesSet([...sorted]);
     }
   };
 
@@ -122,7 +138,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
   const onClickOpenIssue = (issue: Issue) => {
     setCurrentIssue(null);
     setCurrentIssue(issue);
-  }
+  };
 
   const getSort = (sort: string) => {
     return sortOptions.filter((option) => option.id === sort)[0].name;
@@ -176,16 +192,19 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
       <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10 rounded-lg">
         <div className="sm:flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-8 text-sm">
-            <button type="button" onClick={() => switchDataset('open')} className={`${activeButton === 'open' && 'active'} btn`}>
+            <button type="button" onClick={() => setActiveButton('open')} className={`${activeButton === 'open' && 'active'} btn`}>
               Open
             </button>
-            <button type="button" onClick={() => switchDataset('all')} className={`${activeButton === 'all' && 'active'} btn`}>
+            <button type="button" onClick={() => setActiveButton('all')} className={`${activeButton === 'all' && 'active'} btn`}>
               All
             </button>
-            <button type="button" onClick={() => switchDataset('pending')} className={`${activeButton === 'pending' && 'active'} btn`}>
+            <button type="button" onClick={() => setActiveButton('unassigned')} className={`${activeButton === 'unassigned' && 'active'} btn`}>
+              Unassigned
+            </button>
+            <button type="button" onClick={() => setActiveButton('pending')} className={`${activeButton === 'pending' && 'active'} btn`}>
               Pending
             </button>
-            <button type="button" onClick={() => switchDataset('closed')} className={`${activeButton === 'closed' && 'active'} btn`}>
+            <button type="button" onClick={() => setActiveButton('closed')} className={`${activeButton === 'closed' && 'active'} btn`}>
               Closed
             </button>
           </div>
@@ -215,16 +234,16 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                   </td>
                 </tr>
               )}
-              {!issuesset ||
-                (issuesset.length <= 0 && (
+              {!issuesSet ||
+                (issuesSet.length <= 0 && (
                   <tr className="h-16">
                     <td colSpan={8} className="p-2 text-center ">
                       No issues found.
                     </td>
                   </tr>
                 ))}
-              {issuesset &&
-                issuesset.map((issue: any) => (
+              {issuesSet &&
+                paginateIssues(issuesSet, page_size, page).map((issue: any) => (
                   <tr className={classNames(issue.closed ? `bg-gray-200 opacity-70` : `bg-white `, `h-16 group`)} key={issue.id}>
                     <td className="p-2">
                       <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
@@ -295,6 +314,23 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
             </tbody>
           </table>
         </div>
+        {issuesSet &&
+        <div className="flex items-stretch justify-center gap-2 mt-4">
+            <span className="btn btn-small btn-secondary text-xs font-mono" onClick={() => setPage(1)}>
+              <ChevronDoubleLeftIcon className="w-3 h-3" />
+            </span>
+            { [...Array(pagesCount)].map((_, i) => (
+            <span 
+              key={i}
+              className={classNames(`btn btn-small btn-secondary text-xs font-mono`, (page == (i+1)) ? `active` : `` )} 
+              onClick={() => setPage(i+1)}
+              >{i + 1}</span>
+            ))}
+            <span className="btn btn-small btn-secondary text-xs font-mono" onClick={() => setPage(pagesCount)}>
+              <ChevronDoubleRightIcon className="w-3 h-3" />
+            </span>
+        </div>
+        }
       </div>
       <IssueModal slug={slug} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
     </>

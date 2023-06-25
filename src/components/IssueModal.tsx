@@ -9,9 +9,8 @@ import shortToken from '@/utils/shortToken';
 import { Select, Tags } from '@/form';
 import axios from 'axios';
 import ConfirmationModal from './ConfirmationModal';
-import { useSession } from "next-auth/react";
-import ExtendedUser from "@/models/ExtendedUser";
-
+import { useSession } from 'next-auth/react';
+import ExtendedUser from '@/models/ExtendedUser';
 
 type IssueModalProps = {
   slug: string;
@@ -27,7 +26,7 @@ type IssueModalProps = {
 };
 
 export default function IssueModal({ slug, issue, onClose, trigger }: IssueModalProps) {
-  const [issueData, setIssueData] = useState<IssueModalProps["issue"] | null>(null);
+  const [issueData, setIssueData] = useState<IssueModalProps['issue'] | null>(null);
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -49,7 +48,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
       setIsOpen(false);
       setIssueData(null);
     }
-  }, [issue]);
+  }, [issue, mutateHistory]);
 
   useEffect(() => {
     if (issueData) {
@@ -57,7 +56,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
         setImAlreadyAssigned(true);
       }
     }
-  }, [issueData]);
+  }, [issueData, user]);
 
   const handleClose = (forced = false) => {
     if (!isConfirmOpen || forced) {
@@ -72,7 +71,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
 
   const handleReopen = () => {
     setIsConfirmOpen(false);
-  }
+  };
 
   const handleCloseIssue = async () => {
     setIsConfirmOpen(true);
@@ -131,8 +130,8 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                     Issue
                     <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
                       <HashtagIcon className="h-3" />
-                      <span className="group-hover:hidden">{shortToken(issueData?.token)}</span>
-                      <span className="opacity-0 group-hover:opacity-100">{issueData?.token}</span>
+                      <span className="group-hover:hidden font-mono">{shortToken(issueData?.token)}</span>
+                      <span className="opacity-0 group-hover:opacity-100 font-mono">{issueData?.token}</span>
                     </span>
                   </h3>
                   <button onClick={() => handleClose()} className="">
@@ -154,7 +153,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                         <ul className="space-y-2 p-2 overflow-y-auto max-h-60">
                           {history?.map((row: IssueHistory) => (
                             <li key={row.id} className="text-xs p-2 rounded bg-gray-100 flex items-center gap-2">
-                              <span className="flex flex-col text-right border-r pr-2 border-gray-600 font-bold">
+                              <span className="flex flex-col text-right border-r pr-2 border-gray-600 font-semibold font-mono">
                                 <span>{moment(row.createdAt).format('MM/DD/YY')}</span>
                                 <span>{moment(row.createdAt).format('h:mma')}</span>
                               </span>
@@ -182,9 +181,12 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                           {issueData?.owner?.name}
                         </div>
                       )}
-                      <div className="flex items-center gap-2 mt-2 ">
-                        <p className="text-sm">created: {moment(issueData?.createdAt).format('MM/DD/YY [at] h:mm a')}</p>
-                        <p className="text-xs">({moment(issueData?.createdAt).fromNow()})</p>
+                      <div className="text-xs flex items-center gap-1 mt-2">
+                        <span>created:</span>
+                        <span className="font-mono">{moment(issueData?.createdAt).format('MM/DD/YY')}</span>
+                        <span>at</span>
+                        <span className="font-mono">{moment(issueData?.createdAt).format('h:mma')}</span>
+                        <span>({moment(issueData?.createdAt).fromNow()})</span>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
