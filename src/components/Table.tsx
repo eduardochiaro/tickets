@@ -12,15 +12,22 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import classNames from '@/utils/classNames';
 import { Issue } from '@prisma/client';
-import { CheckCircleIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, EllipsisHorizontalCircleIcon, PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/outline";
+import {
+  CheckCircleIcon,
+  ChevronDoubleLeftIcon,
+  ChevronDoubleRightIcon,
+  EllipsisHorizontalCircleIcon,
+  PauseCircleIcon,
+  PlayCircleIcon,
+} from '@heroicons/react/24/outline';
 
 const paginateIssues = (issues: any, page_size: number, page_number: number) => {
   return issues.slice((page_number - 1) * page_size, page_number * page_size);
-}
+};
 
 const getPagesCount = (issues: any, page_size: number) => {
   return Math.ceil(issues.length / page_size);
-}
+};
 
 const page_size = 5;
 
@@ -69,7 +76,7 @@ const statusIcon = (statusId: number) => {
     case 4:
       return <EllipsisHorizontalCircleIcon className="h-4 text-white" />;
   }
-}
+};
 
 const sortOptions = [
   {
@@ -98,8 +105,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
       const pages = Math.ceil(issuesSet.length / page_size);
       setPagesCount(pages);
     }
-  }, [issuesSet, page_size]);
-
+  }, [issuesSet]);
 
   useEffect(() => {
     if (issues) {
@@ -317,16 +323,12 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                     <td className="whitespace-nowrap p-2">
                       <div className="flex items-center">
                         {!issue.closed && (
-                        <p className={`text-sm leading-none flex items-center gap-2 ${statusColor(issue.statusId)}`}>
-                          {statusIcon(issue.statusId)}
-                          {issue.status.title}
-                        </p>
+                          <p className={`text-sm leading-none flex items-center gap-2 ${statusColor(issue.statusId)}`}>
+                            {statusIcon(issue.statusId)}
+                            {issue.status.title}
+                          </p>
                         )}
-                        {issue.closed && (
-                        <p className={`text-sm leading-none ${statusColor(0)}`}>
-                          Closed
-                        </p>
-                        )}
+                        {issue.closed && <p className={`text-sm leading-none ${statusColor(0)}`}>Closed</p>}
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
@@ -339,23 +341,25 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
             </tbody>
           </table>
         </div>
-        {issuesSet &&
-        <div className="flex items-stretch justify-center gap-2 mt-4">
+        {issuesSet && (
+          <div className="flex items-stretch justify-center gap-2 mt-4">
             <span className="btn btn-small btn-secondary text-xs font-mono" onClick={() => setPage(1)}>
               <ChevronDoubleLeftIcon className="w-3 h-3" />
             </span>
-            { [...Array(pagesCount)].map((_, i) => (
-            <span 
-              key={i}
-              className={classNames(`btn btn-small btn-secondary text-xs font-mono`, (page == (i+1)) ? `active` : `` )} 
-              onClick={() => setPage(i+1)}
-              >{i + 1}</span>
+            {[...Array(pagesCount)].map((_, i) => (
+              <span
+                key={i}
+                className={classNames(`btn btn-small btn-secondary text-xs font-mono`, page == i + 1 ? `active` : ``)}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </span>
             ))}
             <span className="btn btn-small btn-secondary text-xs font-mono" onClick={() => setPage(pagesCount)}>
               <ChevronDoubleRightIcon className="w-3 h-3" />
             </span>
-        </div>
-        }
+          </div>
+        )}
       </div>
       <IssueModal slug={slug} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
     </>

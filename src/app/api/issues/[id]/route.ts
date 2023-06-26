@@ -47,25 +47,34 @@ export async function PUT(
   const session = await getServerSession(authOptions);
   const user = session?.user as ExtendedUser;
 
-  const { assigneeId = [] }: { assigneeId: string[] } = await request.json();
+  const { assigneeId = [], statusId, typeId, message }: { assigneeId: string[]; statusId: string; typeId: string; message: string } = await request.json();
 
   const issueId = parseInt(params.id);
 
   const issue = await findIssue(issueId);
 
   if (issue) {
-    const message =
-      assigneeId.length == 1 && assigneeId[0] == user.id
-        ? `${user.name} assigned the issue to himself`
-        : `${user.name} assigned ${assigneeId.length} users to the issue`;
-
     await saveHistory(issueId, issue.status.title, issue.type.title, message, parseInt(user.id));
 
-    const issueReturn = await prisma.issue.update({
-      data: {
+    const constructData = {};
+    if (statusId) {
+      Object.assign(constructData, { statusId: parseInt(statusId) });
+    }
+    if (typeId) {
+      Object.assign(constructData, { typeId: parseInt(typeId) });
+    }
+
+    if (assigneeId.length > 0) {
+      Object.assign(constructData, {
         assignees: {
           connectOrCreate: assigneeId.map((id) => ({ where: { issueId_userId: { userId: parseInt(id), issueId } }, create: { userId: parseInt(id) } })),
         },
+      });
+    }
+
+    const issueReturn = await prisma.issue.update({
+      data: {
+        ...constructData,
       },
       where: {
         id: issueId,

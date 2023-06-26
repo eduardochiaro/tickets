@@ -1,16 +1,17 @@
 import { Issue, Status, Type, User, IssueHistory } from '@prisma/client';
-import { useEffect, useState, Fragment, use } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import useStaleSWR from '../utils/staleSWR';
+import useStaleSWR from '@/utils/staleSWR';
 import Image from 'next/image';
 import moment from 'moment';
 import { DocumentIcon, HashtagIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import shortToken from '@/utils/shortToken';
 import { Select, Tags } from '@/form';
 import axios from 'axios';
-import ConfirmationModal from './ConfirmationModal';
+import ConfirmationModal from '@/components/ConfirmationModal';
 import { useSession } from 'next-auth/react';
 import ExtendedUser from '@/models/ExtendedUser';
+import { ArrowSmallRightIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/solid';
 
 type IssueModalProps = {
   slug: string;
@@ -25,11 +26,33 @@ type IssueModalProps = {
   trigger: (e: boolean) => void;
 };
 
+function MoveAlongButton({ onClick, statusId }: { onClick: () => void; statusId: number }) {
+  switch (statusId) {
+    case 4:
+    case 1:
+      return (
+        <button className="btn btn-secondary" onClick={onClick}>
+          <span>Move to Pending</span>
+          <ArrowSmallRightIcon className="h-5" />
+        </button>
+      );
+    case 2:
+      return (
+        <button className="btn btn-secondary" onClick={onClick}>
+          <span>Move to Waiting</span>
+          <ArrowUturnLeftIcon className="h-5" />
+        </button>
+      );
+    default:
+      return null;
+  }
+}
+
 export default function IssueModal({ slug, issue, onClose, trigger }: IssueModalProps) {
   const [issueData, setIssueData] = useState<IssueModalProps['issue'] | null>(null);
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isCloseIssueConfirmOpen, setIsCloseIssueConfirmOpen] = useState(false);
   const [imAlreadyAssigned, setImAlreadyAssigned] = useState(false);
   const { data: types } = useStaleSWR(`/api/types`);
   const { data: status } = useStaleSWR(`/api/status`);
@@ -41,7 +64,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
     setImAlreadyAssigned(false);
     if (issue) {
       setIssueData(issue);
-      setIsConfirmOpen(false);
+      setIsCloseIssueConfirmOpen(false);
       mutateHistory();
       setIsOpen(true);
     } else {
@@ -59,7 +82,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
   }, [issueData, user]);
 
   const handleClose = (forced = false) => {
-    if (!isConfirmOpen || forced) {
+    if (!isCloseIssueConfirmOpen || forced) {
       setIsOpen(false);
 
       const timer = setTimeout(() => {
@@ -70,25 +93,74 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
   };
 
   const handleReopen = () => {
-    setIsConfirmOpen(false);
+    setIsCloseIssueConfirmOpen(false);
   };
 
   const handleCloseIssue = async () => {
-    setIsConfirmOpen(true);
+    setIsCloseIssueConfirmOpen(true);
   };
 
-  const handleConfirm = async () => {
+  const handleCloseIssueConfirm = async () => {
     const res = await axios.delete(`/api/issues/${issueData?.id}`);
     if (res.status === 200) {
-      setIsConfirmOpen(false);
+      setIsCloseIssueConfirmOpen(false);
       handleClose(true);
       trigger(true);
     }
   };
 
   const handleAssingToMe = async () => {
+    const message = `${user.name} assigned the issue to himself`;
+
     const res = await axios.put(`/api/issues/${issueData?.id}`, {
       assigneeId: [user.id],
+      message,
+    });
+    if (res.status === 200) {
+      mutateHistory();
+      trigger(true);
+      setIssueData(res.data);
+    }
+  };
+
+  const handleMoveAlong = async () => {
+    const statusIdChange = (id: number) => {
+      switch (id) {
+        default:
+        case 1:
+          return 2;
+        case 2:
+          return 4;
+      }
+    };
+
+    const messageChange = (id: number) => {
+      switch (id) {
+        default:
+        case 1:
+          return `${user.name} changed the status to pending`;
+        case 2:
+          return `${user.name} changed the status to waiting`;
+      }
+    };
+
+    const message = `${user.name} changed the status to pending`;
+    const res = await axios.put(`/api/issues/${issueData?.id}`, {
+      statusId: statusIdChange(issueData?.statusId || 0),
+      message: messageChange(issueData?.statusId || 0),
+    });
+    if (res.status === 200) {
+      mutateHistory();
+      trigger(true);
+      setIssueData(res.data);
+    }
+  };
+
+  const handleMarkAsResolved = async () => {
+    const message = `${user.name} marked the issue as resolved`;
+    const res = await axios.put(`/api/issues/${issueData?.id}`, {
+      statusId: 3,
+      message,
     });
     if (res.status === 200) {
       mutateHistory();
@@ -218,13 +290,20 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                           value={issueData?.assignees?.map((a: any) => a.user) as []}
                           updateItem={() => null}
                         />
+                        <div className="flex justify-end mt-2">
+                          <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-primary">
+                            Assign to me
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </Dialog.Description>
                 <div className="flex justify-end gap-6 mt-4">
-                  <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-primary">
-                    Assign to me
+                  <MoveAlongButton statusId={issueData?.statusId || 0} onClick={() => handleMoveAlong()} />
+                  <div className="grow"> </div>
+                  <button disabled={issueData?.closed || issueData?.statusId == 3} onClick={() => handleMarkAsResolved()} className="btn btn-primary">
+                    Mark as Resolved
                   </button>
                   <button disabled={issueData?.closed} onClick={() => handleCloseIssue()} className="btn btn-action">
                     Close Issue
@@ -236,11 +315,11 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
         </Dialog>
       </Transition>
       <ConfirmationModal
-        openModal={isConfirmOpen}
+        openModal={isCloseIssueConfirmOpen}
         onClose={() => handleReopen()}
-        onConfirm={() => handleConfirm()}
+        onConfirm={() => handleCloseIssueConfirm()}
         title="Close Issue"
-        message="Are you sure you want to close this issueData?"
+        message="Are you sure you want to close this Issue? This will not mark as resolved. Please use the 'Mark as Resolved' button for that."
       />
     </>
   );
