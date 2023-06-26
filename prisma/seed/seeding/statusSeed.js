@@ -16,7 +16,7 @@ const data = [
   },
   {
     id: 4,
-    title: 'Waiting for Customer'
+    title: 'Waiting'
   }
 ];
 

@@ -1,6 +1,6 @@
 
 .btn {
-  @apply font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-sky-300;
+  @apply font-medium tracking-wide select-none text-sm relative inline-flex items-center justify-center gap-2 cursor-pointer border-2 border-solid py-1 px-6 rounded-md overflow-hidden z-10 transition-all duration-300 ease-in-out outline-0 border-sky-300;
   &:hover {
     @apply bg-sky-300 text-white;
   }

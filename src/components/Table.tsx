@@ -1,6 +1,6 @@
 'use client';
 
-import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/outline';
+import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/solid';
 import moment from 'moment';
 import Image from 'next/image';
 import React, { useState, useEffect, Fragment, use } from 'react';
@@ -12,7 +12,7 @@ import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import classNames from '@/utils/classNames';
 import { Issue } from '@prisma/client';
-import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon } from "@heroicons/react/24/solid";
+import { CheckCircleIcon, ChevronDoubleLeftIcon, ChevronDoubleRightIcon, EllipsisHorizontalCircleIcon, PauseCircleIcon, PlayCircleIcon } from "@heroicons/react/24/outline";
 
 const paginateIssues = (issues: any, page_size: number, page_number: number) => {
   return issues.slice((page_number - 1) * page_size, page_number * page_size);
@@ -46,15 +46,30 @@ function compare(key: any, order = 'asc') {
 const statusColor = (statusId: number) => {
   switch (statusId) {
     case 2:
-      return 'p-1 rounded bg-yellow-100 text-yellow-800';
+      return 'p-2 px-3 rounded-lg bg-yellow-600 text-white';
     case 3:
-      return 'p-1 rounded bg-green-100 text-green-800';
+      return 'p-2 px-3 rounded-lg bg-green-600 text-white';
     case 4:
-      return 'p-1 rounded bg-sky-100 text-sky-800';
+      return 'p-2 px-3 rounded-lg bg-sky-600 text-white';
     default:
-      return 'p-1 rounded bg-gray-100 text-gray-800';
+      return 'p-2 px-3 rounded-lg bg-gray-600 text-white';
   }
 };
+
+const statusIcon = (statusId: number) => {
+  switch (statusId) {
+    default:
+      return <></>;
+    case 1:
+      return <PlayCircleIcon className="h-4 text-white" />;
+    case 2:
+      return <PauseCircleIcon className="h-4 text-white" />;
+    case 3:
+      return <CheckCircleIcon className="h-4 text-white" />;
+    case 4:
+      return <EllipsisHorizontalCircleIcon className="h-4 text-white" />;
+  }
+}
 
 const sortOptions = [
   {
@@ -286,7 +301,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                         <p className="text-sm leading-none text-gray-600">{issue.type.title}</p>
                       </div>
                     </td>
-                    <td className="whitespace-nowrap p-2">
+                    <td className="whitespace-nowrap p-2 cursor-help" title={moment(issue.createdAt).format('MM/DD/YYYY hh:mma')}>
                       <div className="flex items-center gap-2">
                         <ListBulletIcon className="w-5 h-5 text-gray-600" />
                         <p className="text-sm leading-none text-gray-600">{moment(issue.createdAt).format('MM/DD/YY')}</p>
@@ -300,8 +315,18 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2">
-                      <div className="flex items-center gap-2">
-                        <p className={`text-sm leading-none ${statusColor(issue.statusId)}`}>{issue.status.title}</p>
+                      <div className="flex items-center">
+                        {!issue.closed && (
+                        <p className={`text-sm leading-none flex items-center gap-2 ${statusColor(issue.statusId)}`}>
+                          {statusIcon(issue.statusId)}
+                          {issue.status.title}
+                        </p>
+                        )}
+                        {issue.closed && (
+                        <p className={`text-sm leading-none ${statusColor(0)}`}>
+                          Closed
+                        </p>
+                        )}
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
