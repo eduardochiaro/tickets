@@ -21,6 +21,7 @@ model Project {
   createdAt     DateTime @default(now()) @db.Timestamp(6)
   issues        Issue[]
   users         ProjectUser[]
+  actions       ProjectActionFlow[]
 }
 
 model Issue {
@@ -72,6 +73,8 @@ model Status {
   title         String   @db.VarChar(255)
   createdAt     DateTime @default(now()) @db.Timestamp(6)
   issues        Issue[]
+  flowOriginalStatus ProjectActionFlow[] @relation("originalStatus")
+  flowFinalStatus ProjectActionFlow[] @relation("finalStatus")
 }
 
 model Type {
@@ -94,6 +97,22 @@ model ProjectUser {
   @@id([projectId, userId])
 }
 
+model ProjectActionFlow {
+  id            Int      @id @default(autoincrement())
+  project       Project  @relation(fields: [projectId], references: [id])
+  projectId     Int
+  title         String   @db.VarChar(255)
+  description   String?  @db.Text
+  originalStatus Status  @relation("originalStatus", fields: [originalStatusId], references: [id])
+  originalStatusId Int
+  finalStatus   Status   @relation("finalStatus", fields: [finalStatusId], references: [id])
+  finalStatusId Int
+  actionText    String   @db.VarChar(255)
+
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime? @db.Timestamp(6)
+}
+
 model Role {
   id            Int      @id @default(autoincrement())
   title         String   @db.VarChar(255)
@@ -107,6 +126,7 @@ model User {
   email           String?   @unique @db.VarChar(255)
   emailVerified   DateTime?
   image           String?
+  isAdmin         Boolean   @default(false)
   accounts        Account[]
   sessions        Session[]
   IssueOwned      Issue[]

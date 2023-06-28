@@ -11,7 +11,7 @@ import shortToken from '@/utils/shortToken';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import classNames from '@/utils/classNames';
-import { Issue } from '@prisma/client';
+import type { Issue } from '@prisma/client';
 import {
   CheckCircleIcon,
   ChevronDoubleLeftIcon,
@@ -20,6 +20,7 @@ import {
   PauseCircleIcon,
   PlayCircleIcon,
 } from '@heroicons/react/24/outline';
+import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
 
 const paginateIssues = (issues: any, page_size: number, page_number: number) => {
   return issues.slice((page_number - 1) * page_size, page_number * page_size);
@@ -89,7 +90,7 @@ const sortOptions = [
   },
 ];
 
-export default function Table({ slug, type }: { slug: string; type: string }) {
+export default function Table({ slug, actions, type }: { slug: string; actions: ProjectActionFlowWithStatues[]; type: string }) {
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesSet, setIssuesSet] = useState<any>(null);
@@ -361,7 +362,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
           </div>
         )}
       </div>
-      <IssueModal slug={slug} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
+      <IssueModal slug={slug} actions={actions} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
     </>
   );
 }

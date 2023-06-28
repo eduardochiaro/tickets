@@ -30,6 +30,10 @@ async function getData(slug: string) {
     where: {
       slug,
     },
+    select: {
+      title: true,
+      slug: true,
+    },
   });
   if (!project) {
     throw new Error('Failed to fetch data');

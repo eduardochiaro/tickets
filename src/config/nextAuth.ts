@@ -28,11 +28,13 @@ const authOptions: NextAuthOptions = {
         },
         select: {
           id: true,
+          isAdmin: true,
         },
       });
 
       session.user = {
         ...session.user,
+        isAdmin: user?.isAdmin || false,
         id: token.sub || (user?.id as any),
       } as ExtendedUser; // Cast the session.user object to ExtendedUser
 

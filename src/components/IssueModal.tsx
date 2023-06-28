@@ -4,17 +4,19 @@ import { Dialog, Transition } from '@headlessui/react';
 import useStaleSWR from '@/utils/staleSWR';
 import Image from 'next/image';
 import moment from 'moment';
-import { DocumentIcon, HashtagIcon, XCircleIcon } from '@heroicons/react/20/solid';
+import { HashtagIcon, XCircleIcon } from '@heroicons/react/20/solid';
 import shortToken from '@/utils/shortToken';
 import { Select, Tags } from '@/form';
 import axios from 'axios';
 import ConfirmationModal from '@/components/ConfirmationModal';
 import { useSession } from 'next-auth/react';
 import ExtendedUser from '@/models/ExtendedUser';
-import { ArrowSmallRightIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/solid';
+import { DocumentIcon } from '@heroicons/react/24/solid';
+import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
 
 type IssueModalProps = {
   slug: string;
+  actions: ProjectActionFlowWithStatues[];
   issue:
     | (Issue & {
         assignees: User[];
@@ -26,29 +28,7 @@ type IssueModalProps = {
   trigger: (e: boolean) => void;
 };
 
-function MoveAlongButton({ onClick, statusId }: { onClick: () => void; statusId: number }) {
-  switch (statusId) {
-    case 4:
-    case 1:
-      return (
-        <button className="btn btn-secondary" onClick={onClick}>
-          <span>Move to Pending</span>
-          <ArrowSmallRightIcon className="h-5" />
-        </button>
-      );
-    case 2:
-      return (
-        <button className="btn btn-secondary" onClick={onClick}>
-          <span>Move to Waiting</span>
-          <ArrowUturnLeftIcon className="h-5" />
-        </button>
-      );
-    default:
-      return null;
-  }
-}
-
-export default function IssueModal({ slug, issue, onClose, trigger }: IssueModalProps) {
+export default function IssueModal({ slug, actions, issue, onClose, trigger }: IssueModalProps) {
   const [issueData, setIssueData] = useState<IssueModalProps['issue'] | null>(null);
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
@@ -123,31 +103,13 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
     }
   };
 
-  const handleMoveAlong = async () => {
-    const statusIdChange = (id: number) => {
-      switch (id) {
-        default:
-        case 1:
-          return 2;
-        case 2:
-          return 4;
-      }
-    };
-
-    const messageChange = (id: number) => {
-      switch (id) {
-        default:
-        case 1:
-          return `${user.name} changed the status to pending`;
-        case 2:
-          return `${user.name} changed the status to waiting`;
-      }
-    };
+  const handleMoveAlong = async (action: ProjectActionFlowWithStatues) => {
+    const messageChange = `${user.name} changed the status to ${action.finalStatus.title}`;
 
     const message = `${user.name} changed the status to pending`;
     const res = await axios.put(`/api/issues/${issueData?.id}`, {
-      statusId: statusIdChange(issueData?.statusId || 0),
-      message: messageChange(issueData?.statusId || 0),
+      statusId: action.finalStatusId,
+      message: messageChange,
     });
     if (res.status === 200) {
       mutateHistory();
@@ -167,6 +129,19 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
       trigger(true);
       setIssueData(res.data);
     }
+  };
+
+  const ActionButton = ({ statusId, actions }: { statusId: number; actions: ProjectActionFlowWithStatues[] }) => {
+    const actionsFiltered = actions.filter((action) => action.originalStatusId === statusId);
+    return (
+      <>
+        { actionsFiltered.map((action: ProjectActionFlowWithStatues, index: number) => (
+        <button key={index} className="btn btn-secondary" onClick={() => handleMoveAlong(action)}>
+          <span>{action.actionText}</span>
+        </button>
+        ))}
+      </>
+    );
   };
 
   return (
@@ -300,7 +275,7 @@ export default function IssueModal({ slug, issue, onClose, trigger }: IssueModal
                   </div>
                 </Dialog.Description>
                 <div className="flex justify-end gap-6 mt-4">
-                  <MoveAlongButton statusId={issueData?.statusId || 0} onClick={() => handleMoveAlong()} />
+                  <ActionButton statusId={issueData?.statusId || 0} actions={actions} />
                   <div className="grow"> </div>
                   <button disabled={issueData?.closed || issueData?.statusId == 3} onClick={() => handleMarkAsResolved()} className="btn btn-primary">
                     Mark as Resolved
