@@ -43,6 +43,9 @@ export async function GET(
           image: true,
         },
       },
+      _count: {
+        select: { messages: true },
+      },
       assignees: {
         select: {
           user: {

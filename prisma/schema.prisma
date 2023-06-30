@@ -44,6 +44,7 @@ model Issue {
   closedAt      DateTime? @db.Timestamp(6)
   assignees     UsersOnIssues[]
   history       IssueHistory[]
+  messages      IssueMessage[]
 }
 
 model IssueHistory {
@@ -108,9 +109,20 @@ model ProjectActionFlow {
   finalStatus   Status   @relation("finalStatus", fields: [finalStatusId], references: [id])
   finalStatusId Int
   actionText    String   @db.VarChar(255)
-
   createdAt     DateTime @default(now()) @db.Timestamp(6)
   updatedAt     DateTime? @db.Timestamp(6)
+}
+
+model IssueMessage {
+  id            Int      @id @default(autoincrement())
+  issue         Issue    @relation(fields: [issueId], references: [id])
+  issueId       Int
+  user          User     @relation(fields: [userId], references: [id])
+  userId        Int
+  message       String   @db.Text
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  updatedAt     DateTime? @db.Timestamp(6)
+  deletedAt     DateTime? @db.Timestamp(6)
 }
 
 model Role {
@@ -133,6 +145,7 @@ model User {
   issuesAssigned  UsersOnIssues[]
   history         IssueHistory[]
   projects        ProjectUser[]
+  messages        IssueMessage[]
 }
 
 //account auth schemas

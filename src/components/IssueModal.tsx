@@ -13,23 +13,18 @@ import { useSession } from 'next-auth/react';
 import ExtendedUser from '@/models/ExtendedUser';
 import { DocumentIcon } from '@heroicons/react/24/solid';
 import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
-
+import IssueExpanded from "@/models/IssueExpanded";
 type IssueModalProps = {
   slug: string;
   actions: ProjectActionFlowWithStatues[];
-  issue:
-    | (Issue & {
-        assignees: User[];
-        owner: User;
-        shortToken: String;
-      })
-    | null;
+  issue: IssueExpanded | null;
   onClose: () => void;
   trigger: (e: boolean) => void;
 };
 
+
 export default function IssueModal({ slug, actions, issue, onClose, trigger }: IssueModalProps) {
-  const [issueData, setIssueData] = useState<IssueModalProps['issue'] | null>(null);
+  const [issueData, setIssueData] = useState<IssueExpanded | null>(null);
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isCloseIssueConfirmOpen, setIsCloseIssueConfirmOpen] = useState(false);

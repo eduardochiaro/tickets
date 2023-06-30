@@ -21,13 +21,10 @@ import {
   PlayCircleIcon,
 } from '@heroicons/react/24/outline';
 import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
+import ChatModal from "./ChatModal";
 
 const paginateIssues = (issues: any, page_size: number, page_number: number) => {
   return issues.slice((page_number - 1) * page_size, page_number * page_size);
-};
-
-const getPagesCount = (issues: any, page_size: number) => {
-  return Math.ceil(issues.length / page_size);
 };
 
 const page_size = 5;
@@ -97,9 +94,10 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
   const [activeButton, setActiveButton] = useState<string>('open');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
   const [triggerMutate, setTriggerMutate] = useState(false);
+  const [showChatModal, setShowChatModal] = useState<any>(null);
+  const [pagesCount, setPagesCount] = useState(0);
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState('latest');
-  const [pagesCount, setPagesCount] = useState(0);
 
   useEffect(() => {
     if (issuesSet) {
@@ -316,10 +314,10 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                       <p className="text-xs">{moment(issue.createdAt).fromNow()}</p>
                     </td>
                     <td className="whitespace-nowrap p-2">
-                      <div className="flex items-center gap-2">
+                      <button onClick={() => setShowChatModal(issue)} className="flex items-center gap-2">
                         <ChatBubbleLeftRightIcon className="w-5 h-5 text-gray-600" />
-                        <p className="text-sm leading-none text-gray-600">23</p>
-                      </div>
+                        <span className="text-sm leading-none text-gray-600">{issue._count.messages}</span>
+                      </button>
                     </td>
                     <td className="whitespace-nowrap p-2">
                       <div className="flex items-center">
@@ -363,6 +361,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
         )}
       </div>
       <IssueModal slug={slug} actions={actions} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
+      <ChatModal showChatModal={showChatModal} />
     </>
   );
 }
