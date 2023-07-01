@@ -3,7 +3,7 @@
 import { ChatBubbleLeftRightIcon, ListBulletIcon } from '@heroicons/react/24/solid';
 import moment from 'moment';
 import Image from 'next/image';
-import React, { useState, useEffect, Fragment, use } from 'react';
+import React, { useState, useEffect, Fragment, use, useReducer } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import IssueModal from './IssueModal';
 import useStaleSWR from '@/utils/staleSWR';
@@ -22,6 +22,7 @@ import {
 } from '@heroicons/react/24/outline';
 import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
 import ChatModal from "./ChatModal";
+import { getItem, setItem } from "@/utils/localStorage";
 
 const paginateIssues = (issues: any, page_size: number, page_number: number) => {
   return issues.slice((page_number - 1) * page_size, page_number * page_size);
@@ -87,17 +88,50 @@ const sortOptions = [
   },
 ];
 
+const showOptions = [
+  {
+    id: 'open',
+    name: 'Open',
+  },
+  {
+    id: 'all',
+    name: 'All',
+  },
+  {
+    id: 'pending',
+    name: 'Pending',
+  },
+  {
+    id: 'unassigned',
+    name: 'Unassigned',
+  },
+  {
+    id: 'closed',
+    name: 'Closed',
+  },
+];
+
 export default function Table({ slug, actions, type }: { slug: string; actions: ProjectActionFlowWithStatues[]; type: string }) {
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesSet, setIssuesSet] = useState<any>(null);
-  const [activeButton, setActiveButton] = useState<string>('open');
   const [currentIssue, setCurrentIssue] = useState<any>(null);
   const [triggerMutate, setTriggerMutate] = useState(false);
   const [showChatModal, setShowChatModal] = useState<any>(null);
   const [pagesCount, setPagesCount] = useState(0);
   const [page, setPage] = useState(1);
-  const [sort, setSort] = useState('latest');
+  const [sorting, updateSorting] = useReducer((state: any, action: any) => {
+    switch (action.type) {
+      case 'show':
+        return { ...state, show: action.payload };
+      case 'sort':
+        return { ...state, sort: action.payload };
+    }
+  }, getItem(`${type}.sorting`) || { show: 'open', sort: 'latest' });
+
+  useEffect(() => {
+    setItem(`${type}.sorting`, sorting);
+  }, [sorting]);
 
   useEffect(() => {
     if (issuesSet) {
@@ -108,7 +142,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
 
   useEffect(() => {
     if (issues) {
-      switch (activeButton) {
+      switch (sorting.show) {
         default:
         case 'open':
           const open = issues.filter((issue: any) => !issue.closed);
@@ -130,7 +164,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
           setIssuesSet([...unassigned]);
       }
     }
-  }, [issues, activeButton]);
+  }, [issues, sorting.show]);
 
   useEffect(() => {
     if (triggerMutate) {
@@ -140,8 +174,8 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
   }, [triggerMutate, mutate]);
 
   const sortByDate = (order: string) => {
-    setSort(order);
-    const filted = activeButton === 'all' ? issues : issuesSet;
+    updateSorting({ type: 'sort', payload: order });
+    const filted = sorting.show === 'all' ? issues : issuesSet;
     if (order === 'latest') {
       const sorted = filted.sort(compare('createdAt', 'desc'));
       setIssuesSet([...sorted]);
@@ -170,9 +204,8 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
         <div className="flex items-center justify-between">
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? 'Issues' : 'My Issues'}</p>
           <div className="relative py-3 px-4 flex items-center gap-1 text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
-            <p>Sort By:</p>
-            <Listbox value={sort} onChange={(e) => sortByDate(e)}>
-              <Listbox.Button>{getSort(sort)}</Listbox.Button>
+            <Listbox value={sorting.sort} onChange={(e) => sortByDate(e)}>
+              <Listbox.Button className="flex items-center gap-1"><span>Sort By:</span> {getSort(sorting.sort)}</Listbox.Button>
               <Transition
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -212,21 +245,11 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
       <div className="py-4 md:py-7 px-4 md:px-8 xl:px-10 rounded-lg">
         <div className="sm:flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-8 text-sm">
-            <button type="button" onClick={() => setActiveButton('open')} className={`${activeButton === 'open' && 'active'} btn`}>
-              Open
-            </button>
-            <button type="button" onClick={() => setActiveButton('all')} className={`${activeButton === 'all' && 'active'} btn`}>
-              All
-            </button>
-            <button type="button" onClick={() => setActiveButton('unassigned')} className={`${activeButton === 'unassigned' && 'active'} btn`}>
-              Unassigned
-            </button>
-            <button type="button" onClick={() => setActiveButton('pending')} className={`${activeButton === 'pending' && 'active'} btn`}>
-              Pending
-            </button>
-            <button type="button" onClick={() => setActiveButton('closed')} className={`${activeButton === 'closed' && 'active'} btn`}>
-              Closed
-            </button>
+            {showOptions.map((option, index) => (
+              <button key={index} type="button" onClick={() => updateSorting({ type: 'show', payload: option.id })} className={`${sorting.show === option.id && 'active'} btn`}>
+                {option.name}
+              </button>
+            ))}
           </div>
         </div>
         <div className="mt-7 rounded-lg ring-1 ring-black ring-opacity-5 overflow-hidden">

@@ -20,7 +20,7 @@ export default async function Project({ params, children }: { params: { slug: st
   return (
     <main className="flex flex-col min-h-screen">
       <Navbar navigation={navigation} />
-      <section className="mx-auto container px-2 sm:px-6 lg:px-8">{children}</section>
+      <section className="mx-auto container grow flex flex-col px-2 sm:px-6 lg:px-8">{children}</section>
     </main>
   );
 }

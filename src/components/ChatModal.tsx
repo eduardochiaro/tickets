@@ -68,7 +68,7 @@ export default function ChatModal({ showChatModal } : { showChatModal: any }) {
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-    <Dialog onClose={() => handleClose()} className="relative z-20">
+    <Dialog onClose={() => handleClose()} className="relative z-30">
       <Transition.Child
         as={Fragment}
         enter="ease-out duration-300"
