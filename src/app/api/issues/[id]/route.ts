@@ -32,6 +32,7 @@ const saveHistory = async (issueId: number, status: string, type: string, messag
       type,
       message,
       userId,
+      isAction: true,
     },
   });
 };

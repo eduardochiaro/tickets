@@ -53,9 +53,10 @@ model IssueHistory {
   issueId       Int
   user          User     @relation(fields: [userId], references: [id])
   userId        Int
+  isAction      Boolean  @default(false)
   status        String   @db.VarChar(255)
   type          String   @db.VarChar(255)
-	message				String   @db.VarChar(255)
+	message 			String?   @db.Text
   createdAt     DateTime @default(now()) @db.Timestamp(6)
 }
 

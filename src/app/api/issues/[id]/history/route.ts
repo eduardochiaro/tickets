@@ -15,8 +15,16 @@ export async function GET(
     where: {
       issueId,
     },
+    include: {
+      user: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+    },
     orderBy: {
-      createdAt: 'desc',
+      createdAt: 'asc',
     },
   });
 

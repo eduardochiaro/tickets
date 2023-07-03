@@ -5,13 +5,12 @@ import moment from 'moment';
 import Image from 'next/image';
 import React, { useState, useEffect, Fragment, use, useReducer } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
-import IssueModal from './IssueModal';
 import useStaleSWR from '@/utils/staleSWR';
 import shortToken from '@/utils/shortToken';
 import { Listbox, Transition } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
 import classNames from '@/utils/classNames';
-import type { Issue } from '@prisma/client';
+
 import {
   CheckCircleIcon,
   ChevronDoubleLeftIcon,
@@ -21,8 +20,9 @@ import {
   PlayCircleIcon,
 } from '@heroicons/react/24/outline';
 import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
-import ChatModal from "./ChatModal";
-import { getItem, setItem } from "@/utils/localStorage";
+import ChatModal from './ChatModal';
+import { getItem, setItem } from '@/utils/localStorage';
+import Link from 'next/link';
 
 const paginateIssues = (issues: any, page_size: number, page_number: number) => {
   return issues.slice((page_number - 1) * page_size, page_number * page_size);
@@ -115,7 +115,6 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesSet, setIssuesSet] = useState<any>(null);
-  const [currentIssue, setCurrentIssue] = useState<any>(null);
   const [triggerMutate, setTriggerMutate] = useState(false);
   const [showChatModal, setShowChatModal] = useState<any>(null);
   const [pagesCount, setPagesCount] = useState(0);
@@ -131,7 +130,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
 
   useEffect(() => {
     setItem(`${type}.sorting`, sorting);
-  }, [sorting]);
+  }, [sorting, type]);
 
   useEffect(() => {
     if (issuesSet) {
@@ -185,15 +184,6 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
     }
   };
 
-  const onModalClose = () => {
-    setCurrentIssue(null);
-  };
-
-  const onClickOpenIssue = (issue: Issue) => {
-    setCurrentIssue(null);
-    setCurrentIssue(issue);
-  };
-
   const getSort = (sort: string) => {
     return sortOptions.filter((option) => option.id === sort)[0].name;
   };
@@ -205,7 +195,9 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? 'Issues' : 'My Issues'}</p>
           <div className="relative py-3 px-4 flex items-center gap-1 text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
             <Listbox value={sorting.sort} onChange={(e) => sortByDate(e)}>
-              <Listbox.Button className="flex items-center gap-1"><span>Sort By:</span> {getSort(sorting.sort)}</Listbox.Button>
+              <Listbox.Button className="flex items-center gap-1">
+                <span>Sort By:</span> {getSort(sorting.sort)}
+              </Listbox.Button>
               <Transition
                 as={Fragment}
                 enter="ease-out duration-300"
@@ -246,7 +238,12 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
         <div className="sm:flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-8 text-sm">
             {showOptions.map((option, index) => (
-              <button key={index} type="button" onClick={() => updateSorting({ type: 'show', payload: option.id })} className={`${sorting.show === option.id && 'active'} btn`}>
+              <button
+                key={index}
+                type="button"
+                onClick={() => updateSorting({ type: 'show', payload: option.id })}
+                className={`${sorting.show === option.id && 'active'} btn`}
+              >
                 {option.name}
               </button>
             ))}
@@ -354,9 +351,9 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 text-right pr-5">
-                      <button onClick={() => onClickOpenIssue(issue)} className="btn btn-gray">
+                      <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} prefetch={false} className="btn btn-gray">
                         View
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))}
@@ -383,7 +380,6 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
           </div>
         )}
       </div>
-      <IssueModal slug={slug} actions={actions} issue={currentIssue} trigger={setTriggerMutate} onClose={() => onModalClose()} />
       <ChatModal showChatModal={showChatModal} />
     </>
   );

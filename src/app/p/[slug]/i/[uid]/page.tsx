@@ -1,12 +1,11 @@
-import IssueModal from "@/components/Issue";
+import IssueModal from '@/components/Issue';
 
-export default async function Page({ params }: { params: { slug: string, uid: string } }) {
-
+export default async function Page({ params }: { params: { slug: string; uid: string } }) {
   const issue = await getIssueData(params.uid);
-  const actions = await getActionsData(params.uid);
+  const actions = await getActionsData(params.slug);
   return (
     <>
-     <IssueModal slug={params.slug} actions={actions} issue={issue} />
+      <IssueModal slug={params.slug} actions={actions} issue={issue} />
     </>
   );
 }
@@ -56,7 +55,6 @@ async function getIssueData(uid: string) {
   }
   return issue;
 }
-
 
 async function getActionsData(slug: string) {
   const actions = await prisma.projectActionFlow.findMany({

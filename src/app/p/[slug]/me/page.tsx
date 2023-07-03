@@ -35,4 +35,3 @@ async function getData(slug: string) {
   }
   return actions;
 }
-
