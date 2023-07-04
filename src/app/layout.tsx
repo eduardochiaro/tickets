@@ -1,3 +1,4 @@
+import ThemeProviders from './theme-provider';
 import AuthProvider from './auth-provider';
 import './globals.scss';
 import { Inter, Noto_Sans_Mono } from 'next/font/google';
@@ -21,9 +22,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${inter.variable} ${mono.variable}`}>
+    <html suppressHydrationWarning lang="en" className={`${inter.variable} ${mono.variable}`}>
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <ThemeProviders>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProviders>
       </body>
     </html>
   );

@@ -192,8 +192,8 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
         <div className="flex items-center justify-between">
-          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">{type == 'all' ? 'Issues' : 'My Issues'}</p>
-          <div className="relative py-3 px-4 flex items-center gap-1 text-sm font-medium leading-none text-gray-600 bg-gray-200 hover:bg-gray-300 cursor-pointer rounded">
+          <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal ">{type == 'all' ? 'Issues' : 'My Issues'}</p>
+          <div className="relative py-3 px-4 flex items-center gap-1 text-sm font-medium leading-none text-gray-600 bg-gray-200  dark:bg-gray-900 hover:bg-gray-300 cursor-pointer rounded">
             <Listbox value={sorting.sort} onChange={(e) => sortByDate(e)}>
               <Listbox.Button className="flex items-center gap-1">
                 <span>Sort By:</span> {getSort(sorting.sort)}
@@ -251,8 +251,8 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
         </div>
         <div className="mt-7 rounded-lg ring-1 ring-black ring-opacity-5 overflow-hidden">
           <table className="min-w-full">
-            <thead className="bg-gray-100 border-b border-gray-300">
-              <tr className="h-12 w-full text-sm leading-none text-gray-800">
+            <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-300 dark:border-gray-600">
+              <tr className="h-12 w-full text-sm leading-none">
                 <th className="font-semibold text-left p-2 pl-5">ID</th>
                 <th className="font-semibold text-left p-2">Issue</th>
                 <th className="font-semibold text-left p-2 whitespace-nowrap">Assigned to</th>
@@ -263,7 +263,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                 <th></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-300 bg-gray-50">
+            <tbody className="divide-y divide-gray-300 dark:divide-gray-600 bg-gray-50 dark:bg-gray-800">
               {isLoading && (
                 <tr className="h-16">
                   <td colSpan={8} className="p-2 text-center">
@@ -284,13 +284,16 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                 ))}
               {issuesSet &&
                 paginateIssues(issuesSet, page_size, page).map((issue: any) => (
-                  <tr className={classNames(issue.closed ? `bg-gray-200 opacity-70` : `bg-white `, `h-16 group`)} key={issue.id}>
+                  <tr
+                    className={classNames(issue.closed ? `bg-gray-200 dark:bg-gray-600 opacity-70` : `bg-white dark:bg-gray-800`, `h-16 group`)}
+                    key={issue.id}
+                  >
                     <td className="p-2">
                       <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
                     </td>
                     <td className="w-full p-2">
                       <div className="flex items-center gap-2">
-                        <p className="text-base font-medium leading-none text-gray-700">{issue.title}</p>
+                        <p className="text-base font-medium leading-none ">{issue.title}</p>
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2">
@@ -299,7 +302,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                           {issue.assignees.slice(0, 3).map((assignee: any) => (
                             <div key={assignee.user.id} className="inline-block relative z-10 hover:z-30 whitespace-nowrap w-8">
                               <Image
-                                className="h-8 w-8 rounded-full ring-2 ring-gray-200 hover:ring-sky-400"
+                                className="h-8 w-8 rounded-full ring-2 ring-gray-200 dark:ring-gray-600 hover:ring-sky-400"
                                 src={assignee.user.image}
                                 alt={assignee.user.name}
                                 title={assignee.user.name}
@@ -312,7 +315,7 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                             <div className="inline-block relative w-8 z-10 hover:z-30">
                               <p
                                 title={`${issue.assignees.length - 3} more assignee(s)`}
-                                className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white"
+                                className="absolute bottom-0 left-0 w-5 h-5 flex items-center text-[0.6rem] bg-sky-400 rounded-full p-1 text-white ring-2 ring-white dark:ring-gray-800"
                               >
                                 +{issue.assignees.length - 3}
                               </p>
@@ -323,20 +326,20 @@ export default function Table({ slug, actions, type }: { slug: string; actions: 
                     </td>
                     <td className="whitespace-nowrap p-2">
                       <div className="flex items-center gap-2">
-                        <p className="text-sm leading-none text-gray-600">{issue.type.title}</p>
+                        <p className="text-sm leading-none ">{issue.type.title}</p>
                       </div>
                     </td>
                     <td className="whitespace-nowrap p-2 cursor-help" title={moment(issue.createdAt).format('MM/DD/YYYY hh:mma')}>
                       <div className="flex items-center gap-2">
-                        <ListBulletIcon className="w-5 h-5 text-gray-600" />
-                        <p className="text-sm leading-none text-gray-600">{moment(issue.createdAt).format('MM/DD/YY')}</p>
+                        <ListBulletIcon className="w-5 h-5 " />
+                        <p className="text-sm leading-none ">{moment(issue.createdAt).format('MM/DD/YY')}</p>
                       </div>
                       <p className="text-xs">{moment(issue.createdAt).fromNow()}</p>
                     </td>
                     <td className="whitespace-nowrap p-2">
                       <button onClick={() => setShowChatModal(issue)} className="flex items-center gap-2">
-                        <ChatBubbleLeftRightIcon className="w-5 h-5 text-gray-600" />
-                        <span className="text-sm leading-none text-gray-600">{issue._count.messages}</span>
+                        <ChatBubbleLeftRightIcon className="w-5 h-5 " />
+                        <span className="text-sm leading-none ">{issue._count.messages}</span>
                       </button>
                     </td>
                     <td className="whitespace-nowrap p-2">

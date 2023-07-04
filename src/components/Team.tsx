@@ -9,7 +9,7 @@ export default function Team({ slug }: { slug: string }) {
 
   return (
     <div className="px-4 md:px-10 py-4 md:py-7">
-      <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal text-gray-800">Team</p>
+      <p className="text-base sm:text-lg md:text-xl lg:text-2xl font-bold leading-normal">Team</p>
       <div className="px-10">
         {roles?.map((role: any) => (
           <Fragment key={role.id}>
@@ -20,7 +20,7 @@ export default function Team({ slug }: { slug: string }) {
                 .map((member: any) => (
                   <div
                     key={member.userId}
-                    className="rounded-lg ring-1 ring-black ring-opacity-5 hover:ring-opacity-20 overflow-hidden bg-gray-50 flex flex-col gap-4"
+                    className="rounded-lg ring-1 ring-black ring-opacity-5 hover:ring-opacity-20 overflow-hidden bg-gray-50 dark:bg-gray-700 flex flex-col gap-4"
                   >
                     <div className="flex items-center">
                       <Image className="h-18 w-18" src={member.user.image} alt={member.user.name} title={member.user.name} width={100} height={100} />

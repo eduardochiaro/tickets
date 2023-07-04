@@ -16,7 +16,8 @@ import axios from 'axios';
 import { getFirstName } from '../utils/getFirstName';
 import Link from 'next/link';
 import { convertToHTML } from '@/utils/convertToHTML';
-import ConfirmationModal from "./ConfirmationModal";
+import ConfirmationModal from './ConfirmationModal';
+import SpinnerIcon from '@/icons/Spinner';
 
 type IssueModalProps = {
   slug: string;
@@ -29,8 +30,6 @@ type IssueHistoryExpanded = IssueHistory & {
 };
 
 export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
-  const { data: types } = useStaleSWR(`/api/types`);
-  const { data: status } = useStaleSWR(`/api/status`);
   const { data: history, mutate: mutateHistory, isLoading: isLoadingHistory } = useStaleSWR(issue ? `/api/issues/${issue.id}/history` : null);
 
   const [issueData, setIssueData] = useState<IssueExpanded>(issue);
@@ -117,69 +116,74 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
 
   return (
     <>
-    <div className="px-4 md:px-10 py-4 md:py-7 grow flex flex-col">
-      <div>
-        <Link href={`/p/${slug}`} className="inline-flex items-center gap-2 mb-6 btn btn-primary">
-          <ArrowLeftIcon className="h-5" /> back to project
-        </Link>
-      </div>
-      <div className="rounded-lg bg-white p-8 grow flex flex-col">
-        <div className="flex justify-between items-center">
-          <h3 className="group text-xl flex items-center gap-1">
-            <DocumentIcon className="h-5" />
-            Issue
-            <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
-              <HashtagIcon className="h-4" />
-              <span className="group-hover:hidden font-mono">{shortToken(issueData?.token)}</span>
-              <span className="opacity-0 group-hover:opacity-100 font-mono">{issueData?.token}</span>
-            </span>
-          </h3>
+      <div className="mx-auto py-4 md:py-7 grow flex flex-col max-w-6xl">
+        <div>
+          <Link href={`/p/${slug}`} className="inline-flex items-center gap-2 mb-6 btn btn-primary">
+            <ArrowLeftIcon className="h-5" /> back to project
+          </Link>
         </div>
-        <h2 className="text-base sm:text-lg md:text-xl lg:text-4xl font-bold leading-normal text-gray-800 border-b pb-4">{issueData?.title}</h2>
-        <div className="grid grid-cols-3 gap-4 grow">
-          <div className="pt-4 pr-4 border-r flex flex-col col-span-2">
-            <div className="flex items-start gap-2">
-              {issueData && issueData?.owner !== null && (
-                <Image
-                  className="h-10 w-10 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
-                  src={issueData?.owner?.image || ''}
-                  alt={issueData?.owner?.name || ''}
-                  title={issueData?.owner?.name || ''}
-                  width={100}
-                  height={100}
-                />
-              )}
-              <div className="grow bg-gray-200 text-sm m-1 ring-offset-2 ring-2 ring-gray-100 rounded ">
-                <h4 className="text-sm p-2 bg-gray-300 rounded-t">
-                  <span className="font-semibold" title={issueData?.owner.name || 'No owner'}>
-                    {issueData?.owner ? getFirstName(issueData.owner.name) : 'No owner'}
-                  </span>{' '}
-                  created this issue{' '}
-                  <span className=" hover:underline" title={moment(issueData?.createdAt).format('MM/DD/YY h:mma')}>
-                    {moment(issueData?.createdAt).fromNow()}
-                  </span>
-                </h4>
-                <div
-                  className="p-4"
-                  dangerouslySetInnerHTML={{
-                    __html: convertToHTML(issueData?.description),
-                  }}
-                ></div>
+        <div className="rounded-lg bg-white dark:bg-gray-800 p-8 grow flex flex-col">
+          <div className="flex justify-between items-center">
+            <h3 className="group text-xl flex items-center gap-1">
+              <DocumentIcon className="h-5" />
+              Issue
+              <span className="opacity-60 text-lg inline-flex items-center flex-nowrap">
+                <HashtagIcon className="h-4" />
+                <span className="group-hover:hidden font-mono">{shortToken(issueData?.token)}</span>
+                <span className="opacity-0 group-hover:opacity-100 font-mono">{issueData?.token}</span>
+              </span>
+            </h3>
+          </div>
+          <h2 className="text-base sm:text-lg md:text-xl lg:text-4xl font-bold leading-normal border-b pb-4">{issueData?.title}</h2>
+          <div className="grid grid-1 xl:grid-cols-4 gap-4 grow">
+            <div className="pt-4 pr-4 xl:border-r flex flex-col col-span-3">
+              <div className="flex items-start gap-2">
+                {issueData && issueData?.owner !== null && (
+                  <Image
+                    className="h-10 w-10 rounded-full ring-2 ring-gray-200 dark:ring-gray-600 group-hover:ring-sky-400"
+                    src={issueData?.owner?.image || ''}
+                    alt={issueData?.owner?.name || ''}
+                    title={issueData?.owner?.name || ''}
+                    width={100}
+                    height={100}
+                  />
+                )}
+                <div className="grow bg-gray-200 dark:bg-gray-600 text-sm m-1 ring-offset-2 ring-2 ring-gray-100 dark:ring-gray-800 rounded ">
+                  <h4 className="text-sm p-2 bg-gray-300 dark:bg-gray-700 rounded-t">
+                    <span className="font-semibold" title={issueData?.owner.name || 'No owner'}>
+                      {issueData?.owner ? getFirstName(issueData.owner.name) : 'No owner'}
+                    </span>{' '}
+                    created this issue{' '}
+                    <span className=" hover:underline" title={moment(issueData?.createdAt).format('MM/DD/YY h:mma')}>
+                      {moment(issueData?.createdAt).fromNow()}
+                    </span>
+                  </h4>
+                  <div
+                    className="p-4"
+                    dangerouslySetInnerHTML={{
+                      __html: convertToHTML(issueData?.description),
+                    }}
+                  ></div>
+                </div>
               </div>
-            </div>
-            <div className="pl-12">
-              {isLoadingHistory && <p className="text-sm text-center opacity-75 mt-6">Loading...</p>}
-              {history?.length === 0 && !isLoadingHistory && <p className="text-sm text-center opacity-75 mt-6">No history yet.</p>}
-              {history?.map((row: IssueHistoryExpanded) => (
-                <div key={row.id} className="flex items-start gap-2 mx-4 border-l py-4 text-sm pb-6 last:pb-16">
-                  <div className="p-1 flex items-start -ml-3 rounded-full bg-white">
-                    {row.isAction && <BoltIcon className="h-4 inline-block" title="Action" />}
-                    {!row.isAction && <ChatBubbleBottomCenterTextIcon className="h-4 inline-block" />}
+              <div className="pl-12">
+                {isLoadingHistory && (
+                  <div className="flex items-center justify-center gap-2 mt-4">
+                    <SpinnerIcon className="animate-spin h-5 w-5" />
+                    Loading
                   </div>
+                )}
+                {history?.length === 0 && !isLoadingHistory && <p className="text-sm text-center opacity-75 mt-6">No history yet.</p>}
+                {history?.map((row: IssueHistoryExpanded) => (
+                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l py-4 text-sm pb-6 last:pb-16">
+                    <div className="p-1 flex items-start -ml-3 rounded-full bg-white dark:bg-gray-800">
+                      {row.isAction && <BoltIcon className="h-4 inline-block" title="Action" />}
+                      {!row.isAction && <ChatBubbleBottomCenterTextIcon className="h-4 inline-block" />}
+                    </div>
                     <div className="flex-1 pt-0.5">
                       <span className=" inline-flex items-center gap-1" title={row.user.name || ''}>
                         <Image
-                          className="h-4 w-4 rounded-full ring-2 ring-gray-200 mr-1"
+                          className="h-4 w-4 rounded-full ring-2 ring-gray-200 dark:ring-gray-600 mr-1"
                           src={row?.user?.image || ''}
                           alt={row?.user?.name || ''}
                           title={row?.user?.name || ''}
@@ -187,65 +191,54 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                           height={100}
                         />
                         <span className="font-semibold">{getFirstName(row.user.name)}</span>
-                        {row.isAction ? row.message : 'commented' }
+                        {row.isAction ? row.message : 'commented'}
                         <span className="hover:underline" title={moment(row.createdAt).format('MM/DD/YY h:mma')}>
                           {moment(row.createdAt).fromNow()}
                         </span>
                       </span>
                       {!row.isAction && (
-                      <div
-                        className="text-sm mt-2"
-                        dangerouslySetInnerHTML={{
-                          __html: convertToHTML(row.message),
-                        }}
+                        <div
+                          className="text-sm mt-2"
+                          dangerouslySetInnerHTML={{
+                            __html: convertToHTML(row.message),
+                          }}
                         ></div>
                       )}
                     </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="pt-4 space-y-3">
+              <h3 className="text-xl font-semibold mb-2">Creator</h3>
+              {issueData?.owner === null && <p className="text-sm text-center opacity-75">No owner yet.</p>}
+              {issueData && issueData?.owner !== null && (
+                <div className="flex items-center gap-2 group">
+                  <Image
+                    className="h-6 w-6 rounded-full ring-2 ring-gray-200 dark:ring-gray-600 group-hover:ring-sky-400"
+                    src={issueData?.owner?.image || ''}
+                    alt={issueData?.owner?.name || ''}
+                    title={issueData?.owner?.name || ''}
+                    width={100}
+                    height={100}
+                  />
+                  {issueData?.owner?.name}
                 </div>
-              ))}
-            </div>
-          </div>
-          <div className="pt-4 space-y-3">
-            <h3 className="text-xl font-semibold mb-2">Creator</h3>
-            {issueData?.owner === null && <p className="text-sm text-center opacity-75">No owner yet.</p>}
-            {issueData && issueData?.owner !== null && (
-              <div className="flex items-center gap-2 group">
-                <Image
-                  className="h-6 w-6 rounded-full ring-2 ring-gray-200 group-hover:ring-sky-400"
-                  src={issueData?.owner?.image || ''}
-                  alt={issueData?.owner?.name || ''}
-                  title={issueData?.owner?.name || ''}
-                  width={100}
-                  height={100}
-                />
-                {issueData?.owner?.name}
+              )}
+              <div className="text-xs flex flex-wrap items-center gap-1 mt-2 border-b pb-2">
+                <span>created:</span>
+                <span className="font-mono">{moment(issueData?.createdAt).format('MM/DD/YY')}</span>
+                <span>at</span>
+                <span className="font-mono">{moment(issueData?.createdAt).format('h:mma')}</span>
+                <span>({moment(issueData?.createdAt).fromNow()})</span>
               </div>
-            )}
-            <div className="text-xs flex items-center gap-1 mt-2">
-              <span>created:</span>
-              <span className="font-mono">{moment(issueData?.createdAt).format('MM/DD/YY')}</span>
-              <span>at</span>
-              <span className="font-mono">{moment(issueData?.createdAt).format('h:mma')}</span>
-              <span>({moment(issueData?.createdAt).fromNow()})</span>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex flex-col">
-                <Select label="Status" name="status" disabled={true} value={issueData?.statusId as unknown as string}>
-                  {status?.map((s: Status) => (
-                    <option key={s.id} value={s.id}>
-                      {s.title}
-                    </option>
-                  ))}
-                </Select>
+              <div className="flex flex-col border-b pb-2">
+                <span className="font-semibold mb-2">Type</span>
+                <span className="text-sm">{issueData?.type?.title}</span>
               </div>
-              <div className="flex flex-col">
-                <Select label="Type" name="type" disabled={true} value={issueData?.typeId as unknown as string}>
-                  {types?.map((s: Type) => (
-                    <option key={s.id} value={s.id}>
-                      {s.title}
-                    </option>
-                  ))}
-                </Select>
+              <div className="flex flex-col border-b pb-2">
+                <span className="font-semibold mb-2">Status</span>
+                <span className="text-sm">{issueData?.status?.title}</span>
               </div>
               <div className="flex flex-col col-span-2">
                 <Tags
@@ -258,34 +251,32 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                   updateItem={() => null}
                 />
                 <div className="flex justify-end mt-2">
-                  <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-primary">
+                  <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-small btn-primary">
                     Assign to me
                   </button>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className="flex justify-end gap-6 pt-4  border-t">
+          <div className="flex justify-end gap-6 pt-4  border-t">
             <ActionButton statusId={issueData?.statusId || 0} actions={actions} />
-          <div className="grow">
+            <div className="grow"></div>
+            <button disabled={issueData?.closed || issueData?.statusId == 3} onClick={() => handleMarkAsResolved()} className="btn btn-primary">
+              Mark as Resolved
+            </button>
+            <button disabled={issueData?.closed} onClick={() => handleCloseIssue()} className="btn btn-action">
+              Close Issue
+            </button>
           </div>
-          <button disabled={issueData?.closed || issueData?.statusId == 3} onClick={() => handleMarkAsResolved()} className="btn btn-primary">
-            Mark as Resolved
-          </button>
-          <button disabled={issueData?.closed} onClick={() => handleCloseIssue()} className="btn btn-action">
-            Close Issue
-          </button>
         </div>
       </div>
-    </div>
-    <ConfirmationModal
-      openModal={isCloseIssueConfirmOpen}
-      onClose={() => handleReopen()}
-      onConfirm={() => handleCloseIssueConfirm()}
-      title="Close Issue"
-      message="Are you sure you want to close this Issue? This will not mark as resolved. Please use the 'Mark as Resolved' button for that."
-    />
+      <ConfirmationModal
+        openModal={isCloseIssueConfirmOpen}
+        onClose={() => handleReopen()}
+        onConfirm={() => handleCloseIssueConfirm()}
+        title="Close Issue"
+        message="Are you sure you want to close this Issue? This will not mark as resolved. Please use the 'Mark as Resolved' button for that."
+      />
     </>
   );
 }

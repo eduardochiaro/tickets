@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import prisma from '@/utils/prisma';
 import authOptions from '@/config/nextAuth';
 import { getServerSession } from 'next-auth';
+import ThemeChanger from '@/components/ThemeChanger';
 
 export default async function Project({ params, children }: { params: { slug: string }; children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -21,6 +22,9 @@ export default async function Project({ params, children }: { params: { slug: st
     <main className="flex flex-col min-h-screen">
       <Navbar navigation={navigation} />
       <section className="mx-auto container grow flex flex-col px-2 sm:px-6 lg:px-8">{children}</section>
+      <footer className="container flex justify-end items-center py-4">
+        <ThemeChanger />
+      </footer>
     </main>
   );
 }
