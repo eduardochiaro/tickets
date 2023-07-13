@@ -19,7 +19,6 @@ import {
   PauseCircleIcon,
   PlayCircleIcon,
 } from '@heroicons/react/24/outline';
-import ProjectActionFlowWithStatues from '@/models/ProjectActionFlowWithStatues';
 import ChatModal from './ChatModal';
 import { getItem, setItem } from '@/utils/localStorage';
 import Link from 'next/link';
@@ -111,7 +110,7 @@ const showOptions = [
   },
 ];
 
-export default function Table({ slug, actions, type }: { slug: string; actions: ProjectActionFlowWithStatues[]; type: string }) {
+export default function Table({ slug, type }: { slug: string; type: string }) {
   const pathAPI = type == 'all' ? `/api/projects/${slug}/issues` : `/api/projects/${slug}/myissues`;
   const { data: issues, mutate, isLoading } = useStaleSWR(pathAPI);
   const [issuesSet, setIssuesSet] = useState<any>(null);

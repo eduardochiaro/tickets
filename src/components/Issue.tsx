@@ -134,9 +134,9 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
               </span>
             </h3>
           </div>
-          <h2 className="text-base sm:text-lg md:text-xl lg:text-4xl font-bold leading-normal border-b pb-4">{issueData?.title}</h2>
+          <h2 className="text-base sm:text-lg md:text-xl lg:text-4xl font-bold leading-normal border-b dark:border-gray-600 pb-4">{issueData?.title}</h2>
           <div className="grid grid-1 xl:grid-cols-4 gap-4 grow">
-            <div className="pt-4 pr-4 xl:border-r flex flex-col col-span-3">
+            <div className="pt-4 pr-4 xl:border-r dark:border-gray-600 flex flex-col col-span-3">
               <div className="flex items-start gap-2">
                 {issueData && issueData?.owner !== null && (
                   <Image
@@ -175,7 +175,7 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                 )}
                 {history?.length === 0 && !isLoadingHistory && <p className="text-sm text-center opacity-75 mt-6">No history yet.</p>}
                 {history?.map((row: IssueHistoryExpanded) => (
-                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l py-4 text-sm pb-6 last:pb-16">
+                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l dark:border-gray-600 py-4 text-sm pb-6 last:pb-16">
                     <div className="p-1 flex items-start -ml-3 rounded-full bg-white dark:bg-gray-800">
                       {row.isAction && <BoltIcon className="h-4 inline-block" title="Action" />}
                       {!row.isAction && <ChatBubbleBottomCenterTextIcon className="h-4 inline-block" />}
@@ -225,18 +225,18 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                   {issueData?.owner?.name}
                 </div>
               )}
-              <div className="text-xs flex flex-wrap items-center gap-1 mt-2 border-b pb-2">
+              <div className="text-xs flex flex-wrap items-center gap-1 mt-2 border-b dark:border-gray-600 pb-2">
                 <span>created:</span>
                 <span className="font-mono">{moment(issueData?.createdAt).format('MM/DD/YY')}</span>
                 <span>at</span>
                 <span className="font-mono">{moment(issueData?.createdAt).format('h:mma')}</span>
                 <span>({moment(issueData?.createdAt).fromNow()})</span>
               </div>
-              <div className="flex flex-col border-b pb-2">
+              <div className="flex flex-col border-b dark:border-gray-600 pb-2">
                 <span className="font-semibold mb-2">Type</span>
                 <span className="text-sm">{issueData?.type?.title}</span>
               </div>
-              <div className="flex flex-col border-b pb-2">
+              <div className="flex flex-col border-b dark:border-gray-600 pb-2">
                 <span className="font-semibold mb-2">Status</span>
                 <span className="text-sm">{issueData?.status?.title}</span>
               </div>
@@ -258,7 +258,7 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
               </div>
             </div>
           </div>
-          <div className="flex justify-end gap-6 pt-4  border-t">
+          <div className="flex justify-end gap-6 pt-4 border-t dark:border-gray-600">
             <ActionButton statusId={issueData?.statusId || 0} actions={actions} />
             <div className="grow"></div>
             <button disabled={issueData?.closed || issueData?.statusId == 3} onClick={() => handleMarkAsResolved()} className="btn btn-primary">

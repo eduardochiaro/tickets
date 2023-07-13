@@ -13,7 +13,7 @@ export default async function SignIn({ searchParams }: { searchParams: any }) {
   return (
     <main className="flex items-center justify-center min-h-screen relative">
       <div className="w-full">
-        <div className="mx-auto max-w-fit rounded-lg bg-white p-8 ring-1 ring-black ring-opacity-5">
+        <div className="mx-auto max-w-fit rounded-lg bg-white dark:bg-gray-700 p-8 ring-1 ring-black ring-opacity-5">
           <TicketIcon
             className="mx-auto h-20 text-sky-600 -rotate-[20deg] hover:-rotate-45 transition-all duration-300 ease-in-out"
             aria-hidden="true"
