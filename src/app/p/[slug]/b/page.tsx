@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Board from '@/components/Board';
 
 export default async function Page({ params }: { params: { slug: string } }) {
-
   return (
     <>
       <Board slug={params.slug} />

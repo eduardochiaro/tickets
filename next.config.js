@@ -18,19 +18,7 @@ const nextConfig = {
         hostname: 'i.pravatar.cc',
       }
     ],
-  },
-  experimental: {
-    appDir: true,
-  },
-	async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/s/projects',
-        permanent: true,
-      },
-    ]
-  },
+  }
 }
 
 module.exports = nextConfig

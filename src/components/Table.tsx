@@ -118,14 +118,17 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
   const [showChatModal, setShowChatModal] = useState<any>(null);
   const [pagesCount, setPagesCount] = useState(0);
   const [page, setPage] = useState(1);
-  const [sorting, updateSorting] = useReducer((state: any, action: any) => {
-    switch (action.type) {
-      case 'show':
-        return { ...state, show: action.payload };
-      case 'sort':
-        return { ...state, sort: action.payload };
-    }
-  }, getItem(`${type}.sorting`) || { show: 'open', sort: 'latest' });
+  const [sorting, updateSorting] = useReducer(
+    (state: any, action: any) => {
+      switch (action.type) {
+        case 'show':
+          return { ...state, show: action.payload };
+        case 'sort':
+          return { ...state, sort: action.payload };
+      }
+    },
+    getItem(`${type}.sorting`) || { show: 'open', sort: 'latest' },
+  );
 
   useEffect(() => {
     setItem(`${type}.sorting`, sorting);

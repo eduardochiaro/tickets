@@ -166,7 +166,7 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                   ></div>
                 </div>
               </div>
-              <div className="pl-12">
+              <div className="pl-12 flex flex-col grow">
                 {isLoadingHistory && (
                   <div className="flex items-center justify-center gap-2 mt-4">
                     <SpinnerIcon className="animate-spin h-5 w-5" />
@@ -175,13 +175,13 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                 )}
                 {history?.length === 0 && !isLoadingHistory && <p className="text-sm text-center opacity-75 mt-6">No history yet.</p>}
                 {history?.map((row: IssueHistoryExpanded) => (
-                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l dark:border-gray-600 py-4 text-sm pb-6 last:pb-16">
+                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l dark:border-gray-600 py-4 text-sm pb-6 last:pb-16 last:grow">
                     <div className="p-1 flex items-start -ml-3 rounded-full bg-white dark:bg-gray-800">
                       {row.isAction && <BoltIcon className="h-4 inline-block" title="Action" />}
                       {!row.isAction && <ChatBubbleBottomCenterTextIcon className="h-4 inline-block" />}
                     </div>
                     <div className="flex-1 pt-0.5">
-                      <span className=" inline-flex items-center gap-1" title={row.user.name || ''}>
+                      <span className="inline-flex items-center gap-1" title={row.user.name || ''}>
                         <Image
                           className="h-4 w-4 rounded-full ring-2 ring-gray-200 dark:ring-gray-600 mr-1"
                           src={row?.user?.image || ''}
