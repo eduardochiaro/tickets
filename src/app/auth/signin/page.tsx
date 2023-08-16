@@ -3,9 +3,11 @@ import ShowProviders from '@/components/ShowProviders';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import { TicketIcon } from '@heroicons/react/24/solid';
+import { getProviders } from 'next-auth/react';
 
 export default async function SignIn({ searchParams }: { searchParams: any }) {
   const session = await getServerSession(authOptions);
+  const providers = await getProviders();
   const { callbackUrl } = searchParams;
   if (session && callbackUrl) {
     redirect(callbackUrl);
@@ -20,7 +22,7 @@ export default async function SignIn({ searchParams }: { searchParams: any }) {
             title="Tickets"
           />
           <h1 className="text-center text-2xl font-semibold mb-10 mt-6">Login</h1>
-          <ShowProviders />
+          <ShowProviders providers={providers} />
         </div>
       </div>
     </main>

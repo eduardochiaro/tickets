@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { Dialog } from '@headlessui/react'
+import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
 
 export default function SearchBar() {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   // show bar when command+k is pressed
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -28,8 +29,9 @@ export default function SearchBar() {
       {/* Full-screen container to center the panel */}
       <div className="fixed inset-0 p-32">
         {/* The actual dialog panel  */}
-        <Dialog.Panel className="mx-auto w-1/2 rounded bg-white dark:bg-gray-800 p-2 ring-1 ring-gray-100 dark:ring-gray-700">
-          searchbox
+        <Dialog.Panel className="flex items-center gap-4 mx-auto w-1/2 rounded bg-white dark:bg-gray-800 p-2 ring-1 ring-gray-100 dark:ring-gray-700">
+          <MagnifyingGlassIcon className="h-7" /> 
+					<input name="search" className="h-10 border-0 text-xl bg-transparent focus:outline-0" placeholder="...search in project"  />
         </Dialog.Panel>
       </div>
     </Dialog>
