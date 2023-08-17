@@ -1,37 +1,91 @@
 'use client';
 
-import { useEffect, useState } from "react";
-import { Dialog } from '@headlessui/react'
-import { MagnifyingGlassIcon } from "@heroicons/react/24/solid";
-
-export default function SearchBar() {
+import { useEffect, useState } from 'react';
+import { Dialog } from '@headlessui/react';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { Issue } from "@prisma/client";
+import Link from "next/link";
+import shortToken from "@/utils/shortToken";
+export default function SearchBar({ slug }: { slug: string  }) {
+  const [searchText, setSearchText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [issues, setIssues] = useState([]);
 
   // show bar when command+k is pressed
   const handleKeyDown = (e: KeyboardEvent) => {
     if (e.metaKey && e.key === 'k') {
       e.preventDefault();
+      setShowSearch(false);
       setIsOpen(true);
     }
-  }
+  };
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
   });
+  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(e.target.value);
+  };
+  useEffect(() => {
+    const callIssueApi = async (slug: string, searchText: string) => { 
+      const result = await fetch(`/api/projects/${slug}/issues?search=${searchText}`)
+        .then((res) => res.json())
+        .then((data) => data);
+      setIssues(result);
+      setShowSearch(true);
+    }
+   
+    const timer = setTimeout(() => {
+      setShowSearch(false);
+      if (searchText.length > 3) {
+        callIssueApi(slug, searchText);
+      }
+    }, 700)
+
+    return () => clearTimeout(timer);
+  }, [searchText, slug]);
+
+  const resetSearch = () => {
+    setSearchText('');
+    setShowSearch(false);
+    setIsOpen(false);
+  }
+
   return (
-    <Dialog
-      open={isOpen}
-      onClose={() => setIsOpen(false)}
-      className="relative z-50"
-    >
+    <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
       {/* The backdrop, rendered as a fixed sibling to the panel container */}
       <div className="fixed inset-0 bg-gray-950/70 backdrop-blur-sm" aria-hidden="true" />
 
       {/* Full-screen container to center the panel */}
       <div className="fixed inset-0 p-32">
         {/* The actual dialog panel  */}
-        <Dialog.Panel className="flex items-center gap-4 mx-auto w-1/2 rounded bg-white dark:bg-gray-800 p-2 ring-1 ring-gray-100 dark:ring-gray-700">
-          <MagnifyingGlassIcon className="h-7" /> 
-					<input name="search" className="h-10 border-0 text-xl bg-transparent focus:outline-0" placeholder="...search in project"  />
+        <Dialog.Panel className="mx-auto w-1/2 rounded bg-white dark:bg-gray-800 ring-1 ring-gray-100 dark:ring-gray-700">
+          <div className="flex place-items-center gap-4 p-2 ">
+            <MagnifyingGlassIcon className="h-7" />
+            <input
+              value={searchText}
+              name="search"
+              className="h-10 border-0 text-xl bg-transparent focus:outline-0 grow"
+              placeholder="...search in project"
+              onChange={(e) => onChange(e)}
+            />
+            <div className="px-2 h-7 flex items-center text-xs bg-gray-100 dark:bg-gray-700 rounded">esc</div>
+          </div>
+          {showSearch && (
+          <div className="flex flex-col gap-4 bg-gray-100 dark:bg-gray-900 p-4 rounded-b border-t border-gray-100 dark:border-gray-700">
+          {issues && (
+            <>
+            <h3 className="font-sans text-xl font-semibold">Issues</h3>
+            {issues.map((issue: Issue) => (
+              <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} onClick={() => resetSearch()} key={issue.id}>
+                {issue.title}
+              </Link>
+            ))}
+            </>
+          )}
+            <h3 className="font-sans text-xl font-semibold">Team</h3>
+          </div>
+          )}
         </Dialog.Panel>
       </div>
     </Dialog>

@@ -4,7 +4,7 @@ import prisma from '@/utils/prisma';
 import authOptions from '@/config/nextAuth';
 import { getServerSession } from 'next-auth';
 import ThemeChanger from '@/components/ThemeChanger';
-import SearchBar from "@/components/SearchBar";
+import SearchBar from '@/components/SearchBar';
 
 export default async function Project({ params, children }: { params: { slug: string }; children: React.ReactNode }) {
   const session = await getServerSession(authOptions);
@@ -26,7 +26,7 @@ export default async function Project({ params, children }: { params: { slug: st
       <footer className="container flex justify-end items-center py-4">
         <ThemeChanger />
       </footer>
-      <SearchBar />
+      <SearchBar slug={params.slug} />
     </main>
   );
 }

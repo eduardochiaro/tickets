@@ -1,7 +1,12 @@
 export function setItem(key: string, value: string): void {
-  localStorage.setItem(key, JSON.stringify(value));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(key, JSON.stringify(value));
+  }
 }
 
 export function getItem(key: string): string | null {
-  return JSON.parse(localStorage.getItem(key) || 'null');
+  if (typeof window !== 'undefined') {
+    return JSON.parse(localStorage.getItem(key) || 'null');
+  }
+  return null;
 }
