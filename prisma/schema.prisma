@@ -139,6 +139,7 @@ model User {
   email           String?   @unique @db.VarChar(255)
   emailVerified   DateTime?
   image           String?
+  username        String?   @unique @db.VarChar(255)
   isAdmin         Boolean   @default(false)
   accounts        Account[]
   sessions        Session[]

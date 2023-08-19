@@ -20,14 +20,21 @@ export async function GET(
   const { searchParams } = new URL(request.url);
   const text = searchParams.get('search') as string;
 
+
+  const find = text
+    ? {
+        title: {
+          contains: text,
+        }
+      }
+    : {};
+
   const issues = await prisma.issue.findMany({
     where: {
       project: {
         slug,
       },
-      title: {
-        contains: text ? text : '',
-      }
+      ...find
     },
     orderBy: {
       createdAt: 'desc',

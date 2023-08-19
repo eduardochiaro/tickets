@@ -2,24 +2,35 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { faker } = require('@faker-js/faker');
 
-const data = [];
-
-for (let index = 1; index < 10; index++) {
-
-	const user = {
-		id: index,
-		name: faker.person.fullName(),
-		email: faker.internet.email(),
-		image: faker.image.avatarGitHub()
-	}
-	data.push(user);
+function createRandomUser() {
+	const firstName = faker.person.firstName();
+	const lastName = faker.person.lastName();
+  return {
+		name: `${firstName} ${lastName}`,
+		email: faker.internet.email({ firstName, lastName}),
+		image: faker.image.avatarGitHub(),
+		username: faker.internet.userName({ firstName, lastName }).replace(/[^a-zA-Z0-9]/g,'').toLowerCase(),
+  };
 }
 
+const users = faker.helpers.multiple(createRandomUser, {
+  count: 9,
+});
+
+const data = users.map((user, index) => {
+	return {
+		...user,
+	};
+});
 
 const seed = async () => {
-  await prisma.user.createMany({
-    data,
-  });
+	users.map(async (user, index) => {
+		await prisma.user.upsert({
+			where: { id: index + 1 },
+			update: user,
+			create: user
+		});
+	});
   console.log('Added user data');
 }
 

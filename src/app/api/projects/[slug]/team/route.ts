@@ -12,7 +12,7 @@ export async function GET(
   const slug = params.slug;
 
   const { searchParams } = new URL(request.url);
-  const text = searchParams.get('text') as string;
+  const text = searchParams.get('search') as string;
 
   const find = text
     ? {
@@ -43,6 +43,7 @@ export async function GET(
       user: {
         select: {
           id: true,
+          username: true,
           name: true,
           image: true,
           email: true,
