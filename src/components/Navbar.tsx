@@ -8,13 +8,15 @@ import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import classNames from '@/utils/classNames';
+import SearchBar from '@/components/SearchBar';
 import { usePathname } from 'next/navigation';
 
-export default function Navbar({ navigation }: { navigation: { name: string; href: string; current: boolean }[] }) {
+export default function Navbar({ navigation, slug }: { navigation: { name: string; href: string; current: boolean }[], slug?: string }) {
   const { data: session } = useSession();
 
   const [navigationData, setNavigationData] = useState(navigation);
   const pathname = usePathname();
+  const [triggerSearch, setTriggerSearch] = useState(false);
 
   useEffect(() => {
     setNavigationData(
@@ -27,7 +29,19 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
     );
   }, [navigation, pathname]);
 
+  const triggerAndReset = () => {
+    setTriggerSearch(true);
+
+    const timer = setTimeout(() => {
+      setTriggerSearch(false);
+    }, 700)
+
+    return () => clearTimeout(timer);
+  };
+    
+
   return (
+    <>
     <Disclosure as="nav" className="bg-gray-800">
       {({ open }) => (
         <>
@@ -67,7 +81,15 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
                   </div>
                 </div>
               </div>
-              <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+              <div className="absolute inset-y-0 right-0 flex items-center gap-4 pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
+                {slug && (
+                <div onClick={() => triggerAndReset()} className="flex items-center gap-4 rounded-md border border-gray-700 bg-gray-900 p-1 px-4">
+                  <div className="text-sm text-gray-300 dark:text-gray-500">Search...</div>
+                  <kbd className="font-sans font-semibold text-xs dark:text-gray-500">
+                    <abbr title="Command" className="no-underline text-gray-300 dark:text-gray-500">⌘</abbr> K
+                  </kbd>
+                </div>
+                )}
                 <button
                   type="button"
                   className="rounded-full bg-gray-800 p-1 text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800"
@@ -77,7 +99,7 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
                 </button>
 
                 {/* Profile dropdown */}
-                <Menu as="div" className="relative ml-3">
+                <Menu as="div" className="relative ">
                   <div>
                     <Menu.Button className="flex rounded-full bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-800">
                       <span className="sr-only">Open user menu</span>
@@ -155,5 +177,7 @@ export default function Navbar({ navigation }: { navigation: { name: string; hre
         </>
       )}
     </Disclosure>
+    {slug && <SearchBar slug={slug} trigger={triggerSearch} />}
+    </>
   );
 }

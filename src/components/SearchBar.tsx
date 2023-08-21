@@ -3,10 +3,12 @@
 import { useEffect, useState } from 'react';
 import { Dialog } from '@headlessui/react';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { Issue } from "@prisma/client";
 import Link from "next/link";
 import shortToken from "@/utils/shortToken";
-export default function SearchBar({ slug }: { slug: string  }) {
+import Image from "next/image";
+import classNames from "@/utils/classNames";
+
+export default function SearchBar({ slug, trigger }: { slug: string; trigger?: boolean  }) {
   const [searchText, setSearchText] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
@@ -28,6 +30,7 @@ export default function SearchBar({ slug }: { slug: string  }) {
     setSearchText(e.target.value);
   };
   useEffect(() => {
+    setShowSearch(false);
     const callIssueApi = async (slug: string, searchText: string) => { 
       const result = await fetch(`/api/projects/${slug}/issues?search=${searchText}`)
         .then((res) => res.json())
@@ -45,7 +48,6 @@ export default function SearchBar({ slug }: { slug: string  }) {
     }
    
     const timer = setTimeout(() => {
-      setShowSearch(false);
       if (searchText.length >= 3) {
         callIssueApi(slug, searchText);
         callTeamApi(slug, searchText);
@@ -54,6 +56,12 @@ export default function SearchBar({ slug }: { slug: string  }) {
 
     return () => clearTimeout(timer);
   }, [searchText, slug]);
+
+  useEffect(() => {
+    if (trigger) {
+      setIsOpen(true);
+    }
+  }, [trigger]);
 
   const resetSearch = () => {
     setSearchText('');
@@ -83,27 +91,37 @@ export default function SearchBar({ slug }: { slug: string  }) {
           </div>
           {showSearch && (
           <div className="flex flex-col gap-4 bg-gray-100 dark:bg-gray-900 p-4 rounded-b border-t border-gray-100 dark:border-gray-700">
-          {issues && issues.length > 0 && (
+          {team.length == 0 && issues.length == 0 && (
+            <div className="flex flex-col items-center justify-center gap-4">
+              <p className="text-xl font-semibold">No results found</p>
+              <p className="text-sm">Try adjusting your search to find what you are looking for.</p>
+            </div>  
+          )}
+          {issues.length > 0 && (
             <>
             <h3 className="font-sans text-xl font-semibold">Issues</h3>
             <ul role="listbox" className="flex flex-col divide-y -mx-4 divide-gray-100 dark:divide-gray-700 border-t border-b border-gray-100 dark:border-gray-700">
-            {issues.map((issue: Issue) => (
-              <li role="option" className=" hover:bg-gray-100 hover:dark:bg-gray-700" key={issue.id}>
+            {issues.map((issue: any) => (
+              <li role="option" className={classNames(issue.closed ? 'line-through' : '',`hover:bg-gray-100 hover:dark:bg-gray-700 focus:bg-gray-100 focus:dark:bg-gray-700`)} key={issue.id}>
                 <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} className="block p-3 px-5" onClick={() => resetSearch()} >
-                  {issue.title}
+                  <p>{issue.title}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Status: <strong>{issue.closed ? 'Closed' : issue.status.title}</strong>
+                  </p>
                 </Link>
               </li>
             ))}
             </ul>
             </>
           )}
-          {team && team.length > 0 && (
+          {team.length > 0 && (
             <>
             <h3 className="font-sans text-xl font-semibold">Team</h3>
             <ul role="listbox" className="flex flex-col divide-y -mx-4 divide-gray-100 dark:divide-gray-700 border-t border-b border-gray-100 dark:border-gray-700">
             {team.map((member: any) => (
               <li role="option" className=" hover:bg-gray-100 hover:dark:bg-gray-700" key={member.user.id}>
-                <Link href={`/p/${slug}/u/${member.user.username}`} className="block p-3 px-5" onClick={() => resetSearch()}>
+                <Link href={`/p/${slug}/u/${member.user.username}`} className="flex items-center gap-2 p-3 px-5" onClick={() => resetSearch()}>
+                  <Image src={member.user.image} width={24} height={24} alt={member.user.name} className="w-5 h-5 rounded-full" />
                   {member.user.name}
                 </Link>
               </li>
