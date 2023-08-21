@@ -1,5 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
+
 
 const data = [
   {
@@ -23,4 +24,4 @@ const seed = async () => {
   console.log('Added role data');
 }
 
-module.exports = seed;
+export default seed;

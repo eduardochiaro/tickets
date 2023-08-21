@@ -1,8 +1,10 @@
-const { PrismaClient } = require('@prisma/client');
-const { customAlphabet } = require('nanoid');
-const { faker } = require('@faker-js/faker');
+import { customAlphabet } from 'nanoid';
+import { faker } from '@faker-js/faker';
 const nanoid = customAlphabet('1234567890abcdef', 16);
+
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
+
 
 const data = [
   {
@@ -73,4 +75,4 @@ const seed = async () => {
   console.log('Added issues data');
 }
 
-module.exports = seed;
+export default seed;

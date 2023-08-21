@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 const data = [
@@ -29,4 +29,4 @@ const seed = async () => {
   console.log('Added type data');
 }
 
-module.exports = seed;
+export default seed;

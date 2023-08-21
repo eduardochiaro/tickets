@@ -1,9 +1,8 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-const data = [
+const data = 
   {
-    id: 1,
     title: 'Testing',
     description: 'this is a testing project',
     slug: 'testing',
@@ -25,13 +24,13 @@ const data = [
       ]
     }
   }
-];
+;
 
 const seed = async () => {
-  await prisma.project.createMany({
+  await prisma.project.create({
     data,
   });
   console.log('Added projects data');
 }
 
-module.exports = seed;
+export default seed;

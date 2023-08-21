@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client');
+import { faker } from '@faker-js/faker';
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
-const { faker } = require('@faker-js/faker');
 
 function createRandomUser() {
 	const firstName = faker.person.firstName();
@@ -19,19 +19,26 @@ const users = faker.helpers.multiple(createRandomUser, {
 
 const data = users.map((user, index) => {
 	return {
-		...user,
-	};
+		id: index + 1,
+		...user
+	}
 });
 
 const seed = async () => {
-	users.map(async (user, index) => {
-		await prisma.user.upsert({
-			where: { id: index + 1 },
-			update: user,
-			create: user
+	console.log('Seeding ' + users.length + ' users');
+	await prisma.user.createMany({
+		data
+	});
+	data.map(async (user) => {
+		await prisma.projectUser.create({
+			data: {
+				userId: user.id,
+				projectId: 1,
+				roleId: 3
+			}
 		});
 	});
   console.log('Added user data');
 }
 
-module.exports = seed;
+export default seed;
