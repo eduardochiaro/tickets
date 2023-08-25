@@ -1,6 +1,6 @@
 //profile page
 
-import UserCard from "@/components/UserCard";
+import UserCard from '@/components/UserCard';
 import authOptions from '@/config/nextAuth';
 import ExtendedUser from '@/models/ExtendedUser';
 import { getServerSession } from 'next-auth';
@@ -11,7 +11,5 @@ export default async function Page() {
   if (!session) {
     return <>NO</>;
   }
-  return (
-    <UserCard user={user} />
-  );
+  return <UserCard user={user} />;
 }

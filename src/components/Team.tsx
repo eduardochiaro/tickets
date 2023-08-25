@@ -1,7 +1,7 @@
 'use client';
 import useStaleSWR from '@/utils/staleSWR';
 import Image from 'next/image';
-import Link from "next/link";
+import Link from 'next/link';
 import { Fragment } from 'react';
 
 export default function Team({ slug }: { slug: string }) {
@@ -20,9 +20,7 @@ export default function Team({ slug }: { slug: string }) {
                 ?.filter((member: any) => member.roleId === role.id)
                 .map((member: any) => (
                   <Link href={`/p/${slug}/u/${member.user.username}`} key={member.userId}>
-                    <div
-                      className="rounded-lg ring-1 ring-black ring-opacity-5 hover:ring-opacity-20 overflow-hidden bg-gray-50 dark:bg-gray-700 flex flex-col gap-4"
-                    >
+                    <div className="rounded-lg ring-1 ring-black ring-opacity-5 hover:ring-opacity-20 overflow-hidden bg-gray-50 dark:bg-gray-700 flex flex-col gap-4">
                       <div className="flex items-center">
                         <Image className="h-18 w-18" src={member.user.image} alt={member.user.name} title={member.user.name} width={100} height={100} />
                         <div className="flex flex-col gap-4 p-4">

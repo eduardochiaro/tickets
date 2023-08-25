@@ -1,7 +1,6 @@
 import Image from 'next/image';
 
-export default async function UserCard({ user }: { user: any}) {
-
+export default async function UserCard({ user }: { user: any }) {
   return (
     <div className="mx-auto max-w-sm mt-7 min-w-fit rounded-lg ring-1 ring-black ring-opacity-5 overflow-hidden bg-gray-100 dark:bg-gray-700">
       <div className="h-52 bg-gray-50 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-600 relative z-0">
@@ -22,7 +21,7 @@ export default async function UserCard({ user }: { user: any}) {
           <h1 className="text-3xl font-sans pb-4">Profile</h1>
           <p>{user?.name}</p>
           <p>{user?.email}</p>
-      </div>
+        </div>
       </div>
     </div>
   );

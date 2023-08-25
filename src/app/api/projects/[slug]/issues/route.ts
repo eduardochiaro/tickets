@@ -10,7 +10,7 @@ const nanoid = customAlphabet('1234567890abcdef', 16);
 export async function GET(
   request: NextRequest,
   {
-    params
+    params,
   }: {
     params: { slug: string };
   },
@@ -20,12 +20,11 @@ export async function GET(
   const { searchParams } = new URL(request.url);
   const text = searchParams.get('search') as string;
 
-
   const find = text
     ? {
         title: {
           contains: text,
-        }
+        },
       }
     : {};
 
@@ -34,7 +33,7 @@ export async function GET(
       project: {
         slug,
       },
-      ...find
+      ...find,
     },
     orderBy: {
       createdAt: 'desc',
