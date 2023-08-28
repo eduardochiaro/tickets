@@ -136,9 +136,6 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
     // find deleted assignees
     const deletedAssignees = assignees.filter((assignee) => assignee.deleted === true);
 
-    console.log('newAssignees', newAssignees);
-    console.log('deletedAssignees', deletedAssignees);
-
     if (newAssignees.length > 0) {
       const message = `assigned ${newAssignees.map((assignee) => assignee.name).join(', ')} to the issue`;
       const res = await axios.put(`/api/issues/${issueData?.id}`, {
