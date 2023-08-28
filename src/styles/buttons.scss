@@ -7,6 +7,18 @@
   &.btn-small {
     @apply py-1 px-2 text-xs;
   }
+  &.btn-text {
+    @apply border-transparent bg-transparent dark:bg-transparent border-0 underline ;
+    &:hover {
+      @apply bg-transparent dark:bg-transparent text-gray-600;
+    }
+    &:disabled {
+      @apply bg-transparent dark:bg-transparent text-gray-400 border-0 cursor-not-allowed;
+      &:hover {
+        @apply bg-transparent dark:bg-transparent text-gray-400;
+      }
+    }
+  }
   &.btn-gray {
     @apply border-gray-300 bg-gray-300 text-gray-900;
     &:hover {

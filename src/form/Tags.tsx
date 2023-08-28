@@ -47,10 +47,14 @@ const Tags = forwardRef<Ref, FormInputProps>(
     const inputSearchRef = useRef<null | HTMLInputElement>(null);
 
     useEffect(() => {
+      resetSearch();
+    }, [value]);
+
+    useEffect(() => {
       const delayDebounceFn = setTimeout(async () => {
         if (searchTerm.length >= 3) {
           resetSearch();
-          const res = await fetch(`${api}?text=${searchTerm}`);
+          const res = await fetch(`${api}?search=${searchTerm}`);
           const elementSearch = await res.json();
           const currentElements = pluck(value, 'id');
           const elementSearchFiltered = indexFilter ? elementSearch.map((element: any) => element[indexFilter]) : elementSearch;
@@ -90,6 +94,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
     };
 
     const resetSearch = () => {
+      setSearchTerm('');
       setOpenMenu(false);
       setSearchResults([]);
     };
@@ -134,7 +139,7 @@ const Tags = forwardRef<Ref, FormInputProps>(
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             {openMenu && (
-              <Menu.Items static className="absolute left-0 top-8 w-56 divide-y divide-gray-300 dark:divide-gray-500 drop-shadow bg-gray-50 rounded">
+              <Menu.Items static className="z-20 absolute left-0 top-8 w-56 divide-y divide-gray-300 dark:divide-gray-500 drop-shadow bg-gray-50 rounded">
                 {searchResults.map((element: any, key: number) => (
                   <div className="px-1 py-1" key={key}>
                     <Menu.Item>

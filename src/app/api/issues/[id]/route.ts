@@ -48,7 +48,13 @@ export async function PUT(
   const session = await getServerSession(authOptions);
   const user = session?.user as ExtendedUser;
 
-  const { assigneeId = [], statusId, typeId, message }: { assigneeId: string[]; statusId: string; typeId: string; message: string } = await request.json();
+  const {
+    assigneeId = [],
+    removedAssigneeId = [],
+    statusId,
+    typeId,
+    message,
+  }: { assigneeId: string[]; removedAssigneeId: string[]; statusId: string; typeId: string; message: string } = await request.json();
 
   const issueId = parseInt(params.id);
 
@@ -69,6 +75,14 @@ export async function PUT(
       Object.assign(constructData, {
         assignees: {
           connectOrCreate: assigneeId.map((id) => ({ where: { issueId_userId: { userId: parseInt(id), issueId } }, create: { userId: parseInt(id) } })),
+        },
+      });
+    }
+
+    if (removedAssigneeId.length > 0) {
+      Object.assign(constructData, {
+        assignees: {
+          deleteMany: removedAssigneeId.map((id) => ({ userId: parseInt(id), issueId })),
         },
       });
     }

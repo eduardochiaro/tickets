@@ -115,7 +115,7 @@ export default function SearchBar({ slug, trigger }: { slug: string; trigger?: b
                         key={issue.id}
                       >
                         <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} className="block p-3 px-5" onClick={() => resetSearch()}>
-                          <p>{issue.title}</p>    
+                          <p>{issue.title}</p>
                           <p className="text-sm text-gray-500 dark:text-gray-400">
                             Status: <strong>{issue.closed ? 'Closed' : issue.status.title}</strong>
                           </p>
@@ -133,7 +133,12 @@ export default function SearchBar({ slug, trigger }: { slug: string; trigger?: b
                     className="flex flex-col divide-y -mx-4 divide-gray-100 dark:divide-gray-700 border-t border-b border-gray-100 dark:border-gray-700"
                   >
                     {team.map((member: any) => (
-                      <li role="option" aria-selected={false} className=" hover:bg-gray-100 hover:dark:bg-gray-700 focus-within:bg-gray-100 focus-within:dark:bg-gray-700" key={member.user.id}>
+                      <li
+                        role="option"
+                        aria-selected={false}
+                        className=" hover:bg-gray-100 hover:dark:bg-gray-700 focus-within:bg-gray-100 focus-within:dark:bg-gray-700"
+                        key={member.user.id}
+                      >
                         <Link href={`/p/${slug}/u/${member.user.username}`} className="flex items-center gap-2 p-3 px-5" onClick={() => resetSearch()}>
                           <Image src={member.user.image} width={24} height={24} alt={member.user.name} className="w-5 h-5 rounded-full" />
                           {member.user.name}

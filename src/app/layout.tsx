@@ -1,4 +1,4 @@
-import Providers from "@/providers";
+import Providers from '@/providers';
 import './globals.scss';
 import { Inter, Noto_Sans_Mono } from 'next/font/google';
 
@@ -25,9 +25,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html suppressHydrationWarning lang="en" className={`${inter.variable} ${mono.variable}`}>
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

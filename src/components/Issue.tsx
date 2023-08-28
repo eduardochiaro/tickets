@@ -35,17 +35,27 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
   const [issueData, setIssueData] = useState<IssueExpanded>(issue);
   const [isCloseIssueConfirmOpen, setIsCloseIssueConfirmOpen] = useState(false);
   const [imAlreadyAssigned, setImAlreadyAssigned] = useState(false);
+  const [assignees, setAssignees] = useState<any[]>([]);
+  const [turnButtonOn, setTurnButtonOn] = useState(false);
 
   const { data: session } = useSession();
   const user = session?.user as ExtendedUser;
 
   useEffect(() => {
     if (issueData) {
-      if (issueData.assignees.filter((assignee: any) => assignee.user.id === parseInt(user?.id)).length > 0) {
+      setAssignees(issueData.assignees.map((assignee: any) => assignee.user));
+    }
+  }, [issueData]);
+
+  useEffect(() => {
+    if (assignees.length > 0) {
+      if (assignees.filter((assignee: any) => assignee.id === parseInt(user?.id)).length > 0) {
         setImAlreadyAssigned(true);
+      } else {
+        setImAlreadyAssigned(false);
       }
     }
-  }, [issueData, user]);
+  }, [assignees, user]);
 
   const handleCloseIssueConfirm = async () => {
     const res = await axios.delete(`/api/issues/${issueData?.id}`);
@@ -63,7 +73,7 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
   };
 
   const handleAssingToMe = async () => {
-    const message = `assigned the issue to himself`;
+    const message = `assigned himself to the issue`;
 
     const res = await axios.put(`/api/issues/${issueData?.id}`, {
       assigneeId: [user.id],
@@ -112,6 +122,47 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
         ))}
       </>
     );
+  };
+
+  const handleAssigneesChange = (value: any) => {
+    setTurnButtonOn(true);
+    setAssignees(value);
+  };
+
+  const SendAssigneesButton = async () => {
+    const assigneesIds = assignees.map((assignee) => assignee.id);
+    // find only new assignees
+    const newAssignees = assignees.filter((assignee) => assignee.new === true);
+    // find deleted assignees
+    const deletedAssignees = assignees.filter((assignee) => assignee.deleted === true);
+
+    console.log('newAssignees', newAssignees);
+    console.log('deletedAssignees', deletedAssignees);
+
+    if (newAssignees.length > 0) {
+      const message = `assigned ${newAssignees.map((assignee) => assignee.name).join(', ')} to the issue`;
+      const res = await axios.put(`/api/issues/${issueData?.id}`, {
+        assigneeId: newAssignees.map((assignee) => assignee.id),
+        message,
+      });
+      if (res.status === 200) {
+        mutateHistory();
+        setIssueData(res.data);
+        setTurnButtonOn(false);
+      }
+    }
+    if (deletedAssignees.length > 0) {
+      const message = `removed ${deletedAssignees.map((assignee) => assignee.name).join(', ')} from the issue`;
+      const res = await axios.put(`/api/issues/${issueData?.id}`, {
+        removedAssigneeId: deletedAssignees.map((assignee) => assignee.id),
+        message,
+      });
+      if (res.status === 200) {
+        mutateHistory();
+        setIssueData(res.data);
+        setTurnButtonOn(false);
+      }
+    }
   };
 
   return (
@@ -175,7 +226,7 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                 )}
                 {history?.length === 0 && !isLoadingHistory && <p className="text-sm text-center opacity-75 mt-6">No history yet.</p>}
                 {history?.map((row: IssueHistoryExpanded) => (
-                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l dark:border-gray-600 py-4 text-sm pb-6 last:pb-16 last:grow">
+                  <div key={row.id} className="flex items-start gap-2 mx-4 border-l dark:border-gray-600 py-4 text-sm pb-4 last:pb-16 last:grow">
                     <div className="p-1 flex items-start -ml-3 rounded-full bg-white dark:bg-gray-800">
                       {row.isAction && <BoltIcon className="h-4 inline-block" title="Action" />}
                       {!row.isAction && <ChatBubbleBottomCenterTextIcon className="h-4 inline-block" />}
@@ -240,21 +291,24 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
                 <span className="font-semibold mb-2">Status</span>
                 <span className="text-sm">{issueData?.status?.title}</span>
               </div>
-              <div className="flex flex-col col-span-2">
+              <div className="flex flex-col col-span-2 relative">
                 <Tags
                   label="Assignees"
                   name="assignees"
                   placeholder="add new person..."
                   api={`/api/projects/${slug}/team`}
                   indexFilter="user"
-                  value={issueData?.assignees?.map((a: any) => a.user) as []}
-                  updateItem={() => null}
+                  value={assignees as []}
+                  updateItem={handleAssigneesChange}
                 />
-                <div className="flex justify-end mt-2">
-                  <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-small btn-primary">
-                    Assign to me
+                <div className="flex justify-end gap-4 mt-2">
+                  <button disabled={!turnButtonOn || issueData?.closed} onClick={() => SendAssigneesButton()} className="btn btn-small btn-primary">
+                    Save changes
                   </button>
                 </div>
+                <button disabled={imAlreadyAssigned || issueData?.closed} onClick={() => handleAssingToMe()} className="btn btn-small btn-text absolute top-0 right-0">
+                  Assign to me
+                </button>
               </div>
             </div>
           </div>

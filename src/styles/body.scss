@@ -1,3 +1,9 @@
 body {
   @apply bg-gray-200 dark:bg-gray-900 text-gray-900 dark:text-gray-200;
 }
+
+#nprogress {
+  .bar {
+    background: linear-gradient(90deg, red 0%, yellow 15%, lime 30%, cyan 50%, blue 65%, magenta 80%, red 100%) !important;
+  }
+}
