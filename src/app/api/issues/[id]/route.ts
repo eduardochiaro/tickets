@@ -161,6 +161,35 @@ export async function DELETE(
       where: {
         id: issueId,
       },
+      include: {
+        status: {
+          select: {
+            title: true,
+          },
+        },
+        type: {
+          select: {
+            title: true,
+          },
+        },
+        owner: {
+          select: {
+            name: true,
+            image: true,
+          },
+        },
+        assignees: {
+          select: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (issueReturn) {

@@ -190,6 +190,10 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
     return sortOptions.filter((option) => option.id === sort)[0].name;
   };
 
+  const handleReopen = () => {
+    setShowChatModal(null);
+  };
+
   return (
     <>
       <div className="px-4 md:px-10 py-4 md:py-7">
@@ -262,13 +266,12 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                 <th className="font-semibold text-left p-2">Created</th>
                 <th className="font-semibold text-left p-2">Chat</th>
                 <th className="font-semibold text-left p-2">Status</th>
-                <th></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-300 dark:divide-gray-600 bg-gray-50 dark:bg-gray-800">
               {isLoading && (
                 <tr className="h-16">
-                  <td colSpan={8} className="p-2 text-center">
+                  <td colSpan={7} className="p-2 text-center">
                     <div className="flex items-center justify-center gap-2">
                       <SpinnerIcon className="animate-spin h-5 w-5" />
                       Loading
@@ -279,7 +282,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
               {!issuesSet ||
                 (issuesSet.length <= 0 && (
                   <tr className="h-16">
-                    <td colSpan={8} className="p-2 text-center ">
+                    <td colSpan={7} className="p-2 text-center ">
                       No issues found.
                     </td>
                   </tr>
@@ -291,12 +294,16 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                     key={issue.id}
                   >
                     <td className="p-2">
-                      <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
+                      <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} prefetch={false}>
+                        <div className="ml-3 opacity-60 group-hover:opacity-100 font-mono text-sm">{shortToken(issue?.token)}</div>
+                      </Link>
                     </td>
                     <td className="w-full p-2">
-                      <div className="flex items-center gap-2">
-                        <p className="text-base font-medium leading-none ">{issue.title}</p>
-                      </div>
+                      <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} prefetch={false}>
+                        <div className="flex items-center gap-2">
+                          <p className="text-base font-medium leading-none ">{issue.title}</p>
+                        </div>
+                      </Link>
                     </td>
                     <td className="whitespace-nowrap p-2">
                       {issue.assignees && (
@@ -355,11 +362,6 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
                         {issue.closed && <p className={`text-sm leading-none ${statusColor(0)}`}>Closed</p>}
                       </div>
                     </td>
-                    <td className="whitespace-nowrap p-2 text-right pr-5">
-                      <Link href={`/p/${slug}/i/${shortToken(issue.token)}`} prefetch={false} className="btn btn-gray">
-                        View
-                      </Link>
-                    </td>
                   </tr>
                 ))}
             </tbody>
@@ -385,7 +387,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
           </div>
         )}
       </div>
-      <ChatModal showChatModal={showChatModal} />
+      <ChatModal onClose={handleReopen} showChatModal={showChatModal} />
     </>
   );
 }

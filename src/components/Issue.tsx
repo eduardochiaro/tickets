@@ -60,6 +60,7 @@ export default function IssueModal({ slug, actions, issue }: IssueModalProps) {
   const handleCloseIssueConfirm = async () => {
     const res = await axios.delete(`/api/issues/${issueData?.id}`);
     if (res.status === 200) {
+      mutateHistory();
       setIssueData(res.data);
     }
   };
