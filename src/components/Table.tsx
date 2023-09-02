@@ -191,6 +191,7 @@ export default function Table({ slug, type }: { slug: string; type: string }) {
   };
 
   const handleReopen = () => {
+    mutate();
     setShowChatModal(null);
   };
 

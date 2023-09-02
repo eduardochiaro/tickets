@@ -2,14 +2,15 @@
 import IssueExpanded from '@/models/IssueExpanded';
 import useStaleSWR from '@/utils/staleSWR';
 import { Dialog, Transition } from '@headlessui/react';
-import { DocumentIcon } from '@heroicons/react/24/solid';
+import { DocumentIcon, PaperAirplaneIcon } from '@heroicons/react/24/solid';
 import Image from 'next/image';
-import { useEffect, useState, Fragment, useRef } from 'react';
+import { useEffect, useState, Fragment, useRef, ChangeEvent } from 'react';
 import SpinnerIcon from '@/icons/Spinner';
 import { useSession } from 'next-auth/react';
 import ExtendedUser from '@/models/ExtendedUser';
 import moment from "moment";
-import { convertToHTML } from '../utils/convertToHTML';
+import { convertToHTML } from '@/utils/convertToHTML';
+import axios from "axios";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef<null | HTMLDivElement>(null);
@@ -20,6 +21,7 @@ const AlwaysScrollToBottom = () => {
 export default function ChatModal({ showChatModal, onClose }: { showChatModal: any, onClose: () => void }) {
   const [issueData, setIssueData] = useState<IssueExpanded | null>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState('');
   const { data: session } = useSession();
   const {
     data: messages,
@@ -44,8 +46,25 @@ export default function ChatModal({ showChatModal, onClose }: { showChatModal: a
     onClose();
   };
 
-  const convertToHTML = (text: string) => {
-    return text.trim().replace(/\n/g, "<br />");
+  const handeChanges = (e: ChangeEvent<any>) => {
+    setMessage(e.target.value);
+  };
+
+  const SendMessageAction = () => {
+    if (message.length > 0) {
+      axios.post(`/api/issues/${showChatModal.id}/messages`, {
+        message: message,
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          mutateMessages();
+          setMessage('');
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }
   };
 
   const Message = ({ message }: { message: any }) => {
@@ -58,7 +77,7 @@ export default function ChatModal({ showChatModal, onClose }: { showChatModal: a
             <div className="text-xs pr-5">{message.user.name}</div>
           </div>
           <div className="py-3 px-4 bg-green-600 rounded-bl-xl rounded-tl-xl rounded-br-xl text-white" dangerouslySetInnerHTML={{
-            __html:convertToHTML(message.message)
+            __html: convertToHTML(message.message)
           }}></div>
           </div>
           <Image
@@ -88,7 +107,7 @@ export default function ChatModal({ showChatModal, onClose }: { showChatModal: a
             <div className="text-xs pr-3">{moment(message.createdAt).fromNow()}</div>
           </div>
           <div className="py-3 px-4 bg-gray-500 rounded-br-xl rounded-tr-xl rounded-bl-xl text-white" dangerouslySetInnerHTML={{
-            __html:convertToHTML(message.message)
+            __html: convertToHTML(message.message)
           }}></div>
         </div>
       </div>
@@ -141,8 +160,11 @@ export default function ChatModal({ showChatModal, onClose }: { showChatModal: a
                 {messages && messages.map((message: any) => <Message key={message.id} message={message} />)}
                 <AlwaysScrollToBottom />
               </Dialog.Description>
-              <div className="">
-                bottom write in
+              <div className="border-t border-gray-500 flex items-center gap-2">
+                <input type="text" className="grow p-2 bg-transparent" placeholder="Type a message..." value={message} onChange={(e) => handeChanges(e) } />
+                <button onClick={() => SendMessageAction() }>
+                  <PaperAirplaneIcon className="h-5 w-5 text-green-600 hover:text-emerald-500" />
+                </button>
               </div>
             </Dialog.Panel>
           </Transition.Child>

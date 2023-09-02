@@ -5,7 +5,6 @@ import useStaleSWR from '@/utils/staleSWR';
 import { ChangeEvent, FormEvent, useReducer } from 'react';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
-import { NextResponse } from 'next/server';
 
 export default function CreateIssue({ slug }: { slug: string }) {
   const router = useRouter();
@@ -28,7 +27,7 @@ export default function CreateIssue({ slug }: { slug: string }) {
     e.preventDefault();
 
     axios
-      .post(`/api/projects/${slug}/issues`, JSON.stringify(issueForm), {
+      .put(`/api/projects/${slug}/issues`, JSON.stringify(issueForm), {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
